@@ -1,0 +1,146 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  /* ── Brand Palette ── */
+  --void:        #000000;
+  --charcoal:    #1C1C1E;
+  --graphite:    #3A3A3C;
+  --steel:       #6B6B70;
+  --cloud:       #3A3A3C;
+  --white:       #FFFFFF;
+  --frost:       #4A4A4F;
+  --page-bg:     #DDDDDD;
+  --card-bg:     rgba(255,255,255,0.55);
+  --card-border: rgba(0,0,0,0.07);
+
+  /* ── Semantic tokens ── */
+  --background:           var(--page-bg);
+  --foreground:           var(--charcoal);
+  --card:                 var(--card-bg);
+  --card-foreground:      var(--charcoal);
+  --popover:              #FFFFFF;
+  --popover-foreground:   var(--charcoal);
+  --primary:              var(--charcoal);
+  --primary-foreground:   #FFFFFF;
+  --secondary:            rgba(0,0,0,0.05);
+  --secondary-foreground: var(--steel);
+  --muted:                rgba(0,0,0,0.04);
+  --muted-foreground:     var(--steel);
+  --accent:               var(--charcoal);
+  --accent-foreground:    #FFFFFF;
+  --destructive:          oklch(0.577 0.245 27.325);
+  --destructive-foreground: oklch(0.985 0 0);
+  --border:               rgba(0,0,0,0.08);
+  --input:                rgba(0,0,0,0.06);
+  --ring:                 rgba(0,0,0,0.2);
+  --radius:               1.25rem;
+}
+
+@theme inline {
+  --font-sans: var(--font-poppins), 'Poppins', system-ui, sans-serif;
+  --font-serif: var(--font-inter), 'Inter', system-ui, sans-serif;
+  --font-mono: 'Geist Mono', monospace;
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --radius-sm:  calc(var(--radius) - 4px);
+  --radius-md:  calc(var(--radius) - 2px);
+  --radius-lg:  var(--radius);
+  --radius-xl:  calc(var(--radius) + 8px);
+  --radius-2xl: calc(var(--radius) + 16px);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+    box-sizing: border-box;
+  }
+  html { scroll-behavior: smooth; }
+  body {
+    background-color: var(--page-bg);
+    color: var(--charcoal);
+    @apply antialiased;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+/* ─── Liquid Glass (light) ───────────────────────────── */
+
+.glass {
+  background: rgba(255,255,255,0.50);
+  backdrop-filter: blur(32px) saturate(180%);
+  -webkit-backdrop-filter: blur(32px) saturate(180%);
+  border: 1px solid rgba(255,255,255,0.70);
+  border-radius: var(--radius);
+}
+
+.glass-strong {
+  background: rgba(255,255,255,0.70);
+  backdrop-filter: blur(48px) saturate(200%);
+  -webkit-backdrop-filter: blur(48px) saturate(200%);
+  border: 1px solid rgba(255,255,255,0.80);
+  border-radius: var(--radius);
+}
+
+.glass-pill {
+  background: rgba(255,255,255,0.60);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid rgba(255,255,255,0.75);
+  border-radius: 9999px;
+  box-shadow: 0 2px 20px rgba(0,0,0,0.06);
+}
+
+/* ─── Buttons ────────────────────────────────────────── */
+
+.btn-primary {
+  background: var(--charcoal);
+  color: #FFFFFF;
+  border-radius: 9999px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+.btn-primary:hover {
+  background: var(--graphite);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+}
+
+.btn-ghost {
+  background: rgba(255,255,255,0.45);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,0.70);
+  border-radius: 9999px;
+  color: var(--graphite);
+  transition: all 0.2s ease;
+}
+.btn-ghost:hover {
+  background: rgba(255,255,255,0.65);
+}
+
+/* ─── Orbs ───────────────────────────────────────────── */
+
+.orb {
+  position: absolute;
+  border-radius: 9999px;
+  pointer-events: none;
+  filter: blur(80px);
+  opacity: 0.35;
+}
