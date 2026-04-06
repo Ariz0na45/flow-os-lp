@@ -4,6 +4,7 @@ import { useState, useEffect, use } from "react"
 import Image from "next/image"
 import { notFound } from "next/navigation"
 import { BlueprintScroll } from "@/components/ui/blueprint-scroll"
+import { Backlight } from "@/components/ui/backlight"
 import { LangSwitcher } from "@/components/lang-switcher"
 import { getDictionary, locales, type Lang, type Dictionary } from "@/lib/i18n/dictionaries"
 
@@ -85,21 +86,9 @@ function Orb({ color = "#FFFFFF", style = {} }: { color?: string; style?: React.
 function OfferCard({ item, wide }: { item: Dictionary["offer"]["items"][number]; wide: boolean }) {
   return (
     <GlassCard className={`p-7 flex flex-col gap-4 ${wide ? "md:col-span-2" : "md:col-span-1"}`}>
-      <div className="flex items-start justify-between gap-3">
-        <div className="flex flex-col gap-1.5">
-          <span className="font-serif font-bold text-base" style={{ color: "var(--charcoal)" }}>{item.name}</span>
-          <Label>{item.subtitle}</Label>
-        </div>
-        <span
-          className="text-xs font-sans font-semibold shrink-0 px-3 py-1 rounded-full"
-          style={{
-            background: "rgba(0,0,0,0.06)",
-            color: "var(--graphite)",
-            border: "1px solid rgba(0,0,0,0.10)",
-          }}
-        >
-          {item.value}
-        </span>
+      <div className="flex flex-col gap-1.5">
+        <span className="font-serif font-bold text-base" style={{ color: "var(--charcoal)" }}>{item.name}</span>
+        <Label>{item.subtitle}</Label>
       </div>
       <p className="text-sm leading-relaxed" style={{ color: "var(--steel)" }}>{item.description}</p>
       {item.highlight && (
@@ -197,7 +186,7 @@ export default function Page({ params }: { params: Promise<{ lang: Lang }> }) {
   if (!locales.includes(lang)) notFound()
   const dict = getDictionary(lang)
 
-  const { hero, pourquoi, resultats, icp, offer, garantie, finalCta } = dict
+  const { hero, pourquoi, resultats, icp, offer, faq, garantie, finalCta } = dict
 
   return (
     <>
@@ -205,7 +194,7 @@ export default function Page({ params }: { params: Promise<{ lang: Lang }> }) {
       <main className="min-h-screen overflow-x-hidden font-sans" style={{ backgroundColor: "var(--page-bg)" }}>
 
         {/* ───── HERO ───────────────────────────────────────── */}
-        <section className="relative min-h-screen flex items-center justify-center overflow-hidden px-4 pt-32 pb-24">
+        <section className="relative min-h-screen flex items-center justify-center px-4 pt-16 pb-12">
           <Orb color="#FFFFFF" style={{ width: 700, height: 700, top: "-15%", left: "-10%" }} />
           <Orb color="#C8C8C8" style={{ width: 500, height: 500, bottom: "-10%", right: "-8%" }} />
 
@@ -238,8 +227,29 @@ export default function Page({ params }: { params: Promise<{ lang: Lang }> }) {
               {hero.subline}
             </p>
 
+            {/* Stats bento */}
+            <div className="grid grid-cols-3 gap-3 mt-6 w-full max-w-md">
+              {hero.stats.map((s) => (
+                <GlassCard key={s.value} className="flex flex-col items-center gap-1 py-5 px-2">
+                  <span className="font-serif font-bold text-xl sm:text-2xl" style={{ color: "var(--charcoal)" }}>{s.value}</span>
+                  <span className="text-[9px] font-sans text-center leading-tight" style={{ color: "var(--steel)" }}>{s.label}</span>
+                </GlassCard>
+              ))}
+            </div>
+
+            {/* Video */}
+            <Backlight className="mt-10 w-full max-w-5xl" blur={25}>
+              <iframe
+                className="w-full aspect-video rounded-3xl"
+                src="https://www.youtube.com/embed/g_SOqAMZdnM?rel=0&modestbranding=1&iv_load_policy=3&disablekb=1&color=white"
+                title="FlowOS"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              />
+            </Backlight>
+
             {/* CTAs */}
-            <div className="flex flex-col sm:flex-row items-center gap-3">
+            <div className="flex flex-col sm:flex-row items-center gap-3 mt-10">
               <a
                 href="#methode"
                 className="px-8 py-3.5 rounded-full text-sm font-semibold text-white transition-all duration-200 hover:-translate-y-0.5"
@@ -261,21 +271,11 @@ export default function Page({ params }: { params: Promise<{ lang: Lang }> }) {
                 {hero.ctaSecondary}
               </a>
             </div>
-
-            {/* Stats bento */}
-            <div className="grid grid-cols-3 gap-3 mt-6 w-full max-w-md">
-              {hero.stats.map((s) => (
-                <GlassCard key={s.value} className="flex flex-col items-center gap-1 py-5 px-2">
-                  <span className="font-serif font-bold text-xl sm:text-2xl" style={{ color: "var(--charcoal)" }}>{s.value}</span>
-                  <span className="text-[9px] font-sans text-center leading-tight" style={{ color: "var(--steel)" }}>{s.label}</span>
-                </GlassCard>
-              ))}
-            </div>
           </div>
         </section>
 
         {/* ───── POURQUOI ───────────────────────────────────── */}
-        <section id="pourquoi" className="relative py-28 px-4 overflow-hidden">
+        <section id="pourquoi" className="relative py-14 px-4 overflow-hidden">
           <Orb color="#FFFFFF" style={{ width: 600, height: 600, top: 0, right: "-15%" }} />
 
           <div className="mx-auto max-w-5xl relative z-10">
@@ -343,7 +343,7 @@ export default function Page({ params }: { params: Promise<{ lang: Lang }> }) {
         <BlueprintScroll dict={dict.blueprint} />
 
         {/* ───── TRANSFORMATIONS ────────────────────────────── */}
-        <section id="resultats" className="relative py-28 px-4 overflow-hidden">
+        <section id="resultats" className="relative py-14 px-4 overflow-hidden">
           <Orb color="#C8C8C8" style={{ width: 500, height: 500, bottom: 0, left: "-8%" }} />
 
           <div className="mx-auto max-w-5xl relative z-10">
@@ -441,7 +441,7 @@ export default function Page({ params }: { params: Promise<{ lang: Lang }> }) {
         </section>
 
         {/* ───── ICP ────────────────────────────────────────── */}
-        <section className="relative py-28 px-4 overflow-hidden">
+        <section className="relative py-14 px-4 overflow-hidden">
           <Orb color="#FFFFFF" style={{ width: 600, height: 600, top: "10%", left: "50%", transform: "translateX(-50%)" }} />
 
           <div className="mx-auto max-w-5xl relative z-10">
@@ -490,7 +490,7 @@ export default function Page({ params }: { params: Promise<{ lang: Lang }> }) {
         </section>
 
         {/* ───── OFFER STACK ────────────────────────────────── */}
-        <section id="offre" className="relative py-28 px-4 overflow-hidden">
+        <section id="offre" className="relative py-14 px-4 overflow-hidden">
           <Orb color="#C8C8C8" style={{ width: 800, height: 800, top: "-20%", right: "-20%" }} />
 
           <div className="mx-auto max-w-5xl relative z-10">
@@ -521,53 +521,41 @@ export default function Page({ params }: { params: Promise<{ lang: Lang }> }) {
               ))}
             </div>
 
-            {/* Value summary */}
-            <GlassCard className="p-8 sm:p-10">
-              <Label>{offer.summaryLabel}</Label>
-              <div className="flex flex-col mt-8">
-                {offer.summaryRows.map(([label, value], i, arr) => (
-                  <div
-                    key={label}
-                    className={`flex items-center justify-between py-3.5 ${i < arr.length - 1 ? "border-b" : ""}`}
-                    style={{ borderColor: "rgba(0,0,0,0.07)" }}
-                  >
-                    <span className="text-sm" style={{ color: "var(--steel)" }}>{label}</span>
-                    <span className="text-sm font-medium" style={{ color: "var(--graphite)" }}>{value}</span>
-                  </div>
-                ))}
-              </div>
+            <a
+              href="https://www.instagram.com/wissamdarsouni"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full flex items-center justify-center py-4 rounded-full text-sm font-sans font-semibold text-white transition-all duration-200 hover:-translate-y-0.5"
+              style={{ background: "var(--charcoal)", boxShadow: "0 4px 20px rgba(0,0,0,0.15)" }}
+            >
+              {offer.ctaButton}
+            </a>
+          </div>
+        </section>
 
-              <div
-                className="flex items-end justify-between mt-8 pt-8 border-t"
-                style={{ borderColor: "rgba(0,0,0,0.08)" }}
-              >
-                <div className="flex flex-col gap-1">
-                  <Label>{offer.totalLabel}</Label>
-                  <span className="font-serif font-bold text-2xl line-through" style={{ color: "rgba(0,0,0,0.18)" }}>{offer.totalStrike}</span>
-                </div>
-                <div className="flex flex-col items-end gap-1">
-                  <Label>{offer.investLabel}</Label>
-                  <span className="font-serif font-bold text-4xl sm:text-5xl" style={{ color: "var(--charcoal)" }}>
-                    {offer.investPrice}
-                  </span>
-                </div>
-              </div>
+        {/* ───── FAQ ────────────────────────────────────────── */}
+        <section className="relative py-14 px-4 overflow-hidden">
+          <div className="mx-auto max-w-3xl relative z-10">
+            <div className="flex flex-col gap-4 mb-12">
+              <Label>{faq.label}</Label>
+              <h2 className="font-serif font-bold text-3xl sm:text-4xl tracking-tight text-balance" style={{ color: "var(--charcoal)" }}>
+                {faq.heading}
+              </h2>
+            </div>
 
-              <a
-                href="https://www.instagram.com/wissamdarsouni"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mt-8 w-full flex items-center justify-center py-4 rounded-full text-sm font-sans font-semibold text-white transition-all duration-200 hover:-translate-y-0.5"
-                style={{ background: "var(--charcoal)", boxShadow: "0 4px 20px rgba(0,0,0,0.15)" }}
-              >
-                {offer.ctaButton}
-              </a>
-            </GlassCard>
+            <div className="flex flex-col gap-3">
+              {faq.items.map((item) => (
+                <GlassCard key={item.q} className="p-6 sm:p-7">
+                  <p className="font-serif font-semibold text-sm mb-2" style={{ color: "var(--charcoal)" }}>{item.q}</p>
+                  <p className="text-sm leading-relaxed" style={{ color: "var(--steel)" }}>{item.a}</p>
+                </GlassCard>
+              ))}
+            </div>
           </div>
         </section>
 
         {/* ───── GARANTIE ───────────────────────────────────── */}
-        <section id="garantie" className="relative py-28 px-4 overflow-hidden">
+        <section id="garantie" className="relative py-14 px-4 overflow-hidden">
           <Orb color="#FFFFFF" style={{ width: 700, height: 700, top: 0, left: "50%", transform: "translateX(-50%)" }} />
 
           <div className="mx-auto max-w-3xl relative z-10">
@@ -611,7 +599,7 @@ export default function Page({ params }: { params: Promise<{ lang: Lang }> }) {
         </section>
 
         {/* ───── FINAL CTA ──────────────────────────────────── */}
-        <section className="relative py-36 px-4 overflow-hidden">
+        <section className="relative py-18 px-4 overflow-hidden">
           <Orb color="#FFFFFF" style={{ width: 800, height: 800, top: "50%", left: "50%", transform: "translate(-50%,-50%)" }} />
 
           <div className="mx-auto max-w-2xl relative z-10 text-center flex flex-col items-center gap-8">

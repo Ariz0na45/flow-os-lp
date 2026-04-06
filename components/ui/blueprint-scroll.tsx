@@ -8,7 +8,7 @@ export function BlueprintScroll({ dict }: { dict: BlueprintDict }) {
   return (
     <section id="methode" className="relative overflow-hidden" style={{ backgroundColor: "var(--page-bg)" }}>
       {/* Section header */}
-      <div className="mx-auto max-w-5xl px-4 pt-28 pb-16">
+      <div className="mx-auto max-w-5xl px-4 pt-14 pb-8">
         <span
           className="text-[10px] font-sans font-semibold tracking-widest uppercase mb-4 block"
           style={{ color: "#636366" }}
@@ -29,7 +29,7 @@ export function BlueprintScroll({ dict }: { dict: BlueprintDict }) {
       </div>
 
       {/* Cards */}
-      <div className="mx-auto max-w-4xl px-4 pb-24 flex flex-col gap-6">
+      <div className="mx-auto max-w-4xl px-4 pb-12 flex flex-col gap-6">
         {dict.phases.map((phase) => (
           <div
             key={phase.num}
@@ -43,7 +43,7 @@ export function BlueprintScroll({ dict }: { dict: BlueprintDict }) {
             className="w-full rounded-3xl p-8 sm:p-10"
           >
             {/* Header */}
-            <div className="flex items-start justify-between gap-4 mb-6">
+            <div className="flex flex-col gap-4 mb-6 sm:flex-row sm:items-start sm:justify-between">
               <div className="flex items-center gap-4">
                 <span
                   className="w-10 h-10 rounded-full flex items-center justify-center text-[11px] font-sans font-bold shrink-0"
@@ -59,7 +59,7 @@ export function BlueprintScroll({ dict }: { dict: BlueprintDict }) {
                 </p>
               </div>
               <span
-                className="text-[9px] font-sans font-semibold tracking-widest uppercase px-3 py-1.5 rounded-full shrink-0"
+                className="text-[9px] font-sans font-semibold tracking-widest uppercase px-3 py-1.5 rounded-full self-start"
                 style={{
                   background: "rgba(0,0,0,0.07)",
                   border: "1px solid rgba(0,0,0,0.10)",
@@ -104,7 +104,7 @@ export function BlueprintScroll({ dict }: { dict: BlueprintDict }) {
       </div>
 
       {/* Footer note */}
-      <p className="text-[10px] pb-28 pt-2 text-center" style={{ color: "#636366" }}>
+      <p className="text-[10px] pb-14 pt-2 text-center" style={{ color: "#636366" }}>
         {dict.footerNote}
       </p>
     </section>

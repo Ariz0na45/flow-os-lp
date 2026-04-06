@@ -13,18 +13,18 @@ export const en: Dictionary = {
       { label: "The offer", href: "#offre" },
       { label: "Guarantee", href: "#garantie" },
     ],
-    cta: "Get started",
+    cta: "Send me a DM",
   },
   hero: {
     eyebrow: "AI · Automation · Blueprint OS",
     headline: [
-      "Systemize your Business",
-      "and SaaS-ify your expertise.",
+      "I install an AI brain",
+      "in your business.",
     ],
     subline:
-      "FlowOS is not a course. It's the Blueprint OS — I install the systems with you and teach you to run them yourself. Forever.",
-    ctaPrimary: "See the Blueprint OS",
-    ctaSecondary: "Why FlowOS?",
+      "In 90 days, I build the systems with you — and teach you to run them yourself. Forever.",
+    ctaPrimary: "Book my audit",
+    ctaSecondary: "See if it's for me",
     stats: [
       { value: "5–10h", label: "saved / week" },
       { value: "90d", label: "Blueprint OS" },
@@ -33,10 +33,10 @@ export const en: Dictionary = {
   },
   pourquoi: {
     label: "Why FlowOS",
-    headingLine1: "Not a course.",
-    headingLine2: "A Blueprint OS.",
+    headingLine1: "Every month without systems,",
+    headingLine2: "you're losing time and money.",
     subline:
-      "A blueprint gets installed once and runs. You don't get a course you'll forget. You come out with a business that automates, thinks and executes — and the skills to evolve it yourself.",
+      "2–5K€ per freelance project. 10h/week on manual tasks. And expertise sitting dormant in your head. FlowOS installs the infrastructure once — and you run it forever.",
     cards: [
       {
         num: "01",
@@ -99,12 +99,12 @@ export const en: Dictionary = {
       },
       {
         num: "03",
-        name: "SaaS-ify",
-        tag: "Full Program · Level 1 + 2",
-        desc: "The validated product moves to recurring revenue. Business sellable, scalable, independent of you. Your expertise works while you sleep.",
+        name: "Recurring revenue",
+        tag: "Going further · Level 1 + 2",
+        desc: "Your validated expertise becomes a recurring product. Business sellable, scalable, independent of you. You go from service provider to founder.",
         outcome: "Your expertise works for you.",
         items: [
-          "Your own SaaS built on your expertise",
+          "Your expertise encoded into a digital product",
           "Recurring revenue — no more time dependency",
           "Business sellable, scalable, independent of you",
           "From 'entrepreneur' to 'founder'",
@@ -134,10 +134,10 @@ export const en: Dictionary = {
       { label: "Architect", desc: "You understand your systems, you know how to change them. You're the one people ask how you did it." },
     ],
     roiLabel: "The ROI Math — What it costs to not have systems",
-    roiLine1: "3,000€ once.",
-    roiLine2: "Vs 2–5K€ per freelance project, indefinitely.",
+    roiLine1: "Every month without systems: 10–20h lost and 2–5K€ in freelancers.",
+    roiLine2: "FlowOS installs once. The return lasts forever.",
     roiText:
-      "Over 12 months, you'll spend 10–20K€ on freelancers for things you could have built yourself. Not counting the leads that fall through the cracks, poorly followed clients, and hours spent on tasks a machine would handle in seconds. That's when 3,000€ becomes obvious.",
+      "Over 12 months, that's 10–20K€ on freelancers for things you could have built yourself. Not counting the leads that fall through the cracks, poorly followed clients, and hours spent on tasks a machine would handle in seconds.",
   },
   icp: {
     label: "Who is it for?",
@@ -231,10 +231,10 @@ export const en: Dictionary = {
       },
       {
         name: "Template Vault",
-        subtitle: "n8n Workflows + Claude Prompts",
+        subtitle: "n8n Workflows + Claude Code Skills",
         value: "1,500€",
         description:
-          "Ready-to-duplicate n8n templates + Claude Code prompts tested on real infopreneur businesses. Onboarding, nurturing, client tracking, follow-ups. Copy, adapt, deploy.",
+          "Ready-to-duplicate n8n templates + Claude Code skills tested on real infopreneur businesses. Onboarding, nurturing, client tracking, follow-ups. Copy, adapt, deploy.",
       },
     ],
     summaryLabel: "Value summary",
@@ -251,7 +251,33 @@ export const en: Dictionary = {
     totalStrike: "7,700€+",
     investLabel: "Your investment",
     investPrice: "3,000€",
-    ctaButton: "Start now",
+    ctaButton: "Book my audit",
+  },
+  faq: {
+    label: "Frequently asked questions",
+    heading: "Answered before you ask.",
+    items: [
+      {
+        q: "I'm not technical — is this still for me?",
+        a: "FlowOS is built for non-devs. We build together, step by step. You don't need any technical skills upfront — that's what we teach you.",
+      },
+      {
+        q: "I already use ChatGPT — why would I need more?",
+        a: "ChatGPT cold is an intern with no context. Claude Code with your workspace is a partner who knows your business, your clients, and your method.",
+      },
+      {
+        q: "What if I buy another program I never finish?",
+        a: "FlowOS isn't a program you follow alone. It's 12 1:1 sessions where we build together. Every session produces a concrete deliverable. There's nothing to finish on your own.",
+      },
+      {
+        q: "My expertise can't be automated — it requires human judgment.",
+        a: "We don't automate your judgment. We automate everything around it: follow-ups, onboarding, tracking, admin. Your expertise stays human — but it's amplified by systems.",
+      },
+      {
+        q: "How much time does it take per week?",
+        a: "One hour session per week + 1–2h of implementation between sessions. The rest, we do together during the calls.",
+      },
+    ],
   },
   garantie: {
     label: "Zero risk",
@@ -269,8 +295,8 @@ export const en: Dictionary = {
     headingLine2: "Your business thinks and executes.",
     subline:
       "One investment. A permanent skill. The autonomy to build, scale and SaaS-ify — without ever depending on anyone.",
-    ctaPrimary: "Start the Blueprint OS",
-    ctaSecondary: "Ask a question →",
-    footnote: "Limited spots · 3,000€ one-time payment · Guaranteed or we continue for free",
+    ctaPrimary: "Book my audit",
+    ctaSecondary: "Ask me a question →",
+    footnote: "Guaranteed or we continue for free",
   },
 }

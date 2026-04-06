@@ -28,3 +28,7 @@ next-env.d.ts
 
 # strategy docs (private)
 *.md
+
+# claude code config
+.claude/
+skills-lock.json

@@ -11,18 +11,18 @@ export const fr = {
       { label: "L'offre", href: "#offre" },
       { label: "Garantie", href: "#garantie" },
     ],
-    cta: "Commencer",
+    cta: "M'envoyer un DM",
   },
   hero: {
     eyebrow: "IA · Automation · Blueprint OS",
     headline: [
-      "Systemise ton Business",
-      "et SaaS-ise ton expertise.",
+      "J'installe un cerveau IA",
+      "dans ton business.",
     ],
     subline:
-      "FlowOS n'est pas une formation. C'est le Blueprint OS — j'installe les systèmes avec toi et je t'apprends à les piloter toi-même. Pour toujours.",
-    ctaPrimary: "Voir le Blueprint OS",
-    ctaSecondary: "Pourquoi FlowOS ?",
+      "En 90 jours, je construis les systèmes avec toi — et je t'apprends à les piloter toi-même. Pour toujours.",
+    ctaPrimary: "Réserver mon audit",
+    ctaSecondary: "Voir si c'est fait pour moi",
     stats: [
       { value: "5–10h", label: "récupérées / sem." },
       { value: "90j", label: "Blueprint OS" },
@@ -31,10 +31,10 @@ export const fr = {
   },
   pourquoi: {
     label: "Pourquoi FlowOS",
-    headingLine1: "Ce n'est pas une formation.",
-    headingLine2: "C'est un Blueprint OS.",
+    headingLine1: "Chaque mois sans système,",
+    headingLine2: "c'est du temps et de l'argent qui partent.",
     subline:
-      "Un blueprint, ça s'installe une fois et ça tourne. Tu ne reçois pas un cours que tu vas oublier. Tu sors avec un business qui automatise, réfléchit et exécute — et la compétence pour le faire évoluer seul.",
+      "2–5K€ par projet freelance. 10h/semaine en tâches manuelles. Et une expertise qui dort dans ta tête. FlowOS installe une infrastructure une fois — et tu la pilotes pour toujours.",
     cards: [
       {
         num: "01",
@@ -97,12 +97,12 @@ export const fr = {
       },
       {
         num: "03",
-        name: "SaaS-iser",
-        tag: "Parcours Complet · Niveau 1 + 2",
-        desc: "Le produit validé passe en récurrent. Business vendable, scalable, indépendant de toi. Ton expertise travaille pendant que tu dors.",
+        name: "Revenu récurrent",
+        tag: "Pour aller plus loin · Niveau 1 + 2",
+        desc: "Ton expertise validée devient un produit récurrent. Business vendable, scalable, indépendant de toi. Tu passes de prestataire à fondateur.",
         outcome: "Ton expertise travaille pour toi.",
         items: [
-          "Ton propre SaaS construit sur ton expertise",
+          "Ton expertise encodée dans un produit digital",
           "Revenu récurrent — plus de dépendance au temps",
           "Business vendable, scalable, indépendant de toi",
           "De «entrepreneur» à «fondateur»",
@@ -132,10 +132,10 @@ export const fr = {
       { label: "Architecte", desc: "Tu comprends tes systèmes, tu sais les modifier. Tu es celui à qui on demande comment t'as fait." },
     ],
     roiLabel: "Le calcul ROI — Ce que ça coûte de ne pas avoir de systèmes",
-    roiLine1: "3 000€ une fois.",
-    roiLine2: "Vs 2–5K€ par projet freelance, indéfiniment.",
+    roiLine1: "Chaque mois sans système : 10–20h perdues et 2–5K€ en freelance.",
+    roiLine2: "FlowOS s'installe une fois. Le retour dure pour toujours.",
     roiText:
-      "En 12 mois, tu vas dépenser 10–20K€ en freelances pour des choses que tu aurais pu construire toi-même. Sans compter les leads qui tombent entre les mailles, les clients mal suivis, et les heures passées sur des tâches que la machine ferait en secondes. C'est à ce moment-là que 3 000€ devient une évidence.",
+      "En 12 mois, c'est 10–20K€ en freelances pour des choses que tu aurais pu construire toi-même. Sans compter les leads qui tombent entre les mailles, les clients mal suivis, et les heures passées sur des tâches que la machine ferait en secondes.",
   },
   icp: {
     label: "Pour qui ?",
@@ -229,10 +229,10 @@ export const fr = {
       },
       {
         name: "Vault de Templates",
-        subtitle: "Workflows n8n + Prompts Claude",
+        subtitle: "Workflows n8n + Skills Claude Code",
         value: "1 500€",
         description:
-          "Templates n8n prêts à dupliquer + prompts Claude Code testés sur de vrais business d'infopreneurs. Onboarding, nurturing, suivi client, relances. Copie, adapte, déploie.",
+          "Templates n8n prêts à dupliquer + skills Claude Code testés sur de vrais business d'infopreneurs. Onboarding, nurturing, suivi client, relances. Copie, adapte, déploie.",
       },
     ],
     summaryLabel: "Récapitulatif de valeur",
@@ -249,7 +249,33 @@ export const fr = {
     totalStrike: "7 700€+",
     investLabel: "Ton investissement",
     investPrice: "3 000€",
-    ctaButton: "Commencer maintenant",
+    ctaButton: "Réserver mon audit",
+  },
+  faq: {
+    label: "Questions fréquentes",
+    heading: "On répond avant que tu demandes.",
+    items: [
+      {
+        q: "Je ne suis pas technique — c'est quand même pour moi ?",
+        a: "FlowOS est conçu pour des non-devs. On construit ensemble, étape par étape. Tu n'as besoin d'aucune compétence technique au départ — c'est ce qu'on t'apprend.",
+      },
+      {
+        q: "J'utilise déjà ChatGPT — pourquoi j'aurais besoin de plus ?",
+        a: "ChatGPT à froid, c'est un stagiaire sans contexte. Claude Code avec ton workspace, c'est un associé qui connaît ton business, tes clients et ta méthode.",
+      },
+      {
+        q: "Et si j'achète encore un programme que je ne finis pas ?",
+        a: "FlowOS n'est pas un programme à suivre seul. C'est 12 sessions 1:1 où on construit ensemble. Chaque session produit un livrable concret. Tu n'as rien à finir seul.",
+      },
+      {
+        q: "Mon expertise ne peut pas s'automatiser — ça demande du jugement humain.",
+        a: "On n'automatise pas ton jugement. On automatise tout ce qui l'entoure : relances, onboarding, suivi, admin. Ton expertise reste humaine — mais elle est amplifiée par des systèmes.",
+      },
+      {
+        q: "Combien de temps ça prend par semaine ?",
+        a: "Une session d'une heure par semaine + 1–2h d'implémentation entre les sessions. Le reste, c'est nous qui le faisons avec toi pendant les calls.",
+      },
+    ],
   },
   garantie: {
     label: "Zéro risque",
@@ -267,9 +293,9 @@ export const fr = {
     headingLine2: "Ton business pense et exécute.",
     subline:
       "Un investissement. Une compétence permanente. L'autonomie pour construire, scaler et SaaS-iser — sans jamais dépendre de personne.",
-    ctaPrimary: "Commencer le Blueprint OS",
-    ctaSecondary: "Poser une question →",
-    footnote: "Places limitées · 3 000€ paiement unique · Garanti ou on continue gratuitement",
+    ctaPrimary: "Réserver mon audit",
+    ctaSecondary: "Me poser une question →",
+    footnote: "Garanti ou on continue gratuitement",
   },
 }
 
