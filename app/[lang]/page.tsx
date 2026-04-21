@@ -194,7 +194,7 @@ export default function Page({ params }: { params: Promise<{ lang: Lang }> }) {
       <main className="min-h-screen overflow-x-hidden font-sans" style={{ backgroundColor: "var(--page-bg)" }}>
 
         {/* ───── HERO ───────────────────────────────────────── */}
-        <section className="relative min-h-screen flex items-center justify-center px-4 pt-16 pb-12">
+        <section className="relative min-h-screen flex items-center justify-center px-4 pt-28 pb-12">
           <Orb color="#FFFFFF" style={{ width: 700, height: 700, top: "-15%", left: "-10%" }} />
           <Orb color="#C8C8C8" style={{ width: 500, height: 500, bottom: "-10%", right: "-8%" }} />
 
@@ -286,7 +286,7 @@ export default function Page({ params }: { params: Promise<{ lang: Lang }> }) {
                 <br />
                 <span style={{ color: "var(--graphite)" }}>{pourquoi.headingLine2}</span>
               </h2>
-              <p className="text-base leading-relaxed max-w-lg" style={{ color: "var(--steel)" }}>
+              <p className="text-lg sm:text-xl font-serif font-medium leading-snug max-w-2xl" style={{ color: "var(--graphite)" }}>
                 {pourquoi.subline}
               </p>
             </div>
@@ -324,18 +324,6 @@ export default function Page({ params }: { params: Promise<{ lang: Lang }> }) {
               ))}
             </div>
 
-            {/* Verbatims */}
-            <div>
-              <Label>{pourquoi.verbatimsLabel}</Label>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
-                {pourquoi.verbatims.map((v) => (
-                  <GlassCard key={v} className="px-6 py-5 flex items-start gap-4">
-                    <span className="text-2xl font-serif leading-none mt-0.5 shrink-0" style={{ color: "var(--graphite)" }}>&ldquo;</span>
-                    <p className="text-sm leading-relaxed italic" style={{ color: "var(--graphite)" }}>{v}</p>
-                  </GlassCard>
-                ))}
-              </div>
-            </div>
           </div>
         </section>
 

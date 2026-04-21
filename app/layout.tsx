@@ -16,8 +16,8 @@ const inter = Inter({
 })
 
 export const metadata: Metadata = {
-  title: 'FlowOS — Automatise Ton Business d\'Infopreneur en 90 Jours',
-  description: 'FlowOS est un accompagnement 1:1 Done-With-You de 90 jours pour infopreneurs francophones qui veulent maîtriser l\'IA et l\'automation sans coder.',
+  title: 'FlowOS — Installe un AI OS dans Ton Business en 90 Jours',
+  description: 'FlowOS est un accompagnement hybride de 90 jours pour fondateurs établis. On installe un AI OS dans ton business — et on te donne les compétences pour le piloter.',
   generator: 'v0.app',
 }
 
