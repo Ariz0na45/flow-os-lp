@@ -4,6 +4,7 @@ import { useState, useEffect, use } from "react"
 import Image from "next/image"
 import { notFound } from "next/navigation"
 import { BlueprintScroll } from "@/components/ui/blueprint-scroll"
+import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion"
 import { Backlight } from "@/components/ui/backlight"
 import { LangSwitcher } from "@/components/lang-switcher"
 import { getDictionary, locales, type Lang, type Dictionary } from "@/lib/i18n/dictionaries"
@@ -257,19 +258,6 @@ export default function Page({ params }: { params: Promise<{ lang: Lang }> }) {
               >
                 {hero.ctaPrimary}
               </a>
-              <a
-                href="#pourquoi"
-                className="px-8 py-3.5 rounded-full text-sm font-medium transition-all duration-200"
-                style={{
-                  background: "rgba(255,255,255,0.55)",
-                  backdropFilter: "blur(16px)",
-                  WebkitBackdropFilter: "blur(16px)",
-                  border: "1px solid rgba(255,255,255,0.80)",
-                  color: "var(--graphite)",
-                }}
-              >
-                {hero.ctaSecondary}
-              </a>
             </div>
           </div>
         </section>
@@ -445,35 +433,41 @@ export default function Page({ params }: { params: Promise<{ lang: Lang }> }) {
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-              {icp.segments.map((seg) => (
-                <GlassCard key={seg.tag + seg.title} className="p-8 flex flex-col gap-5">
-                  <div className="flex items-center justify-between">
-                    <Tag>{seg.tag}</Tag>
-                    <span className="text-xs font-sans font-medium" style={{ color: "var(--graphite)" }}>{seg.rev}</span>
-                  </div>
-                  <h3 className="font-serif font-bold text-xl leading-snug" style={{ color: "var(--charcoal)" }}>{seg.title}</h3>
-                  <p className="text-sm leading-relaxed" style={{ color: "var(--steel)" }}>{seg.desc}</p>
-                </GlassCard>
-              ))}
-            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <GlassCard className="p-8">
+                <Label>{icp.forLabel}</Label>
+                <div className="flex flex-col gap-4 mt-6">
+                  {icp.forYou.map((d) => (
+                    <div key={d} className="flex items-start gap-3">
+                      <span
+                        className="w-5 h-5 rounded-full flex items-center justify-center shrink-0 text-[10px] mt-0.5"
+                        style={{ background: "rgba(0,0,0,0.85)", color: "#fff" }}
+                      >
+                        ✓
+                      </span>
+                      <span className="text-sm leading-relaxed" style={{ color: "var(--charcoal)" }}>{d}</span>
+                    </div>
+                  ))}
+                </div>
+              </GlassCard>
 
-            <GlassCard className="p-8">
-              <Label>{icp.notForLabel}</Label>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
-                {icp.notFor.map((d) => (
-                  <div key={d} className="flex items-start gap-3">
-                    <span
-                      className="w-5 h-5 rounded-full flex items-center justify-center shrink-0 text-[9px] mt-0.5"
-                      style={{ background: "rgba(0,0,0,0.05)", border: "1px solid rgba(0,0,0,0.09)", color: "rgba(0,0,0,0.25)" }}
-                    >
-                      ✕
-                    </span>
-                    <span className="text-sm leading-relaxed" style={{ color: "var(--steel)" }}>{d}</span>
-                  </div>
-                ))}
-              </div>
-            </GlassCard>
+              <GlassCard className="p-8">
+                <Label>{icp.notForLabel}</Label>
+                <div className="flex flex-col gap-4 mt-6">
+                  {icp.notFor.map((d) => (
+                    <div key={d} className="flex items-start gap-3">
+                      <span
+                        className="w-5 h-5 rounded-full flex items-center justify-center shrink-0 text-[9px] mt-0.5"
+                        style={{ background: "rgba(0,0,0,0.05)", border: "1px solid rgba(0,0,0,0.09)", color: "rgba(0,0,0,0.25)" }}
+                      >
+                        ✕
+                      </span>
+                      <span className="text-sm leading-relaxed" style={{ color: "var(--steel)" }}>{d}</span>
+                    </div>
+                  ))}
+                </div>
+              </GlassCard>
+            </div>
           </div>
         </section>
 
@@ -524,21 +518,24 @@ export default function Page({ params }: { params: Promise<{ lang: Lang }> }) {
         {/* ───── FAQ ────────────────────────────────────────── */}
         <section className="relative py-14 px-4 overflow-hidden">
           <div className="mx-auto max-w-3xl relative z-10">
-            <div className="flex flex-col gap-4 mb-12">
-              <Label>{faq.label}</Label>
-              <h2 className="font-serif font-bold text-3xl sm:text-4xl tracking-tight text-balance" style={{ color: "var(--charcoal)" }}>
-                {faq.heading}
-              </h2>
-            </div>
+            <h2 className="font-serif font-bold text-3xl sm:text-4xl tracking-tight mb-10" style={{ color: "var(--charcoal)" }}>
+              FAQ
+            </h2>
 
-            <div className="flex flex-col gap-3">
-              {faq.items.map((item) => (
-                <GlassCard key={item.q} className="p-6 sm:p-7">
-                  <p className="font-serif font-semibold text-sm mb-2" style={{ color: "var(--charcoal)" }}>{item.q}</p>
-                  <p className="text-sm leading-relaxed" style={{ color: "var(--steel)" }}>{item.a}</p>
+            <Accordion type="single" collapsible className="flex flex-col gap-3">
+              {faq.items.map((item, i) => (
+                <GlassCard key={item.q}>
+                  <AccordionItem value={`faq-${i}`} className="border-b-0 px-6 sm:px-7">
+                    <AccordionTrigger className="font-serif font-semibold text-sm py-5 hover:no-underline" style={{ color: "var(--charcoal)" }}>
+                      {item.q}
+                    </AccordionTrigger>
+                    <AccordionContent className="text-sm leading-relaxed pb-5" style={{ color: "var(--steel)" }}>
+                      {item.a}
+                    </AccordionContent>
+                  </AccordionItem>
                 </GlassCard>
               ))}
-            </div>
+            </Accordion>
           </div>
         </section>
 
