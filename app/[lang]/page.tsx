@@ -242,7 +242,7 @@ export default function Page({ params }: { params: Promise<{ lang: Lang }> }) {
             <Backlight className="mt-10 w-full max-w-5xl" blur={25}>
               <iframe
                 className="w-full aspect-video rounded-3xl"
-                src="https://www.youtube.com/embed/g_SOqAMZdnM?rel=0&modestbranding=1&iv_load_policy=3&disablekb=1&color=white"
+                src="https://www.youtube.com/embed/ehqlCsgYZ58?rel=0&modestbranding=1&iv_load_policy=3&disablekb=1&color=white"
                 title="FlowOS"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
