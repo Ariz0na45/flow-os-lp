@@ -8,7 +8,6 @@ import { AnimatePresence, motion } from "framer-motion"
 const LOGO = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/FlowOS-JtznK6RZZIiu5LvIS7iMeGfWun0D73.png"
 const IG_URL = "https://www.instagram.com/wissamdarsouni"
 const CAL_LINK = "wissam-darsouni/audit-flowos"          // cal.com/<CAL_LINK>
-const VSL_YT_ID = "ehqlCsgYZ58"                          // vidéo de fin de quiz (swap ici)
 
 // ─── Dark theme — matches the FlowOS skill-store DA ──────
 const BG = "#000000"
@@ -506,24 +505,6 @@ export default function Page() {
                   Je regarde ta situation et je te recontacte avec ton <strong style={{ color: TEXT }}>plan d'implémentation IA personnalisé</strong>
                   {answers.instagram ? <> en DM sur <span style={{ color: PEACH }}>@{answers.instagram.replace(/^@/, "")}</span></> : null} sous 24–48h.
                 </p>
-              </div>
-
-              {/* VSL */}
-              <div className="w-full flex flex-col items-center gap-3">
-                <p className="text-sm" style={{ color: TEXT_MUTED }}>
-                  En attendant, 2 minutes pour comprendre <span style={{ color: TEXT }}>ce que je vais te construire</span> 👇
-                </p>
-                <div className="w-full rounded-2xl overflow-hidden relative"
-                  style={{ aspectRatio: "16 / 9", border: `1px solid ${CARD_BORDER}`, boxShadow: CARD_SHADOW, background: "#000" }}>
-                  <iframe
-                    src={`https://www.youtube-nocookie.com/embed/${VSL_YT_ID}?rel=0&modestbranding=1&color=white`}
-                    title="Vidéo FlowOS"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                    allowFullScreen
-                    className="absolute inset-0 w-full h-full"
-                    style={{ border: 0 }}
-                  />
-                </div>
               </div>
 
               {/* Booking */}
