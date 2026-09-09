@@ -61,6 +61,51 @@ export const en: Dictionary = {
       "I have zero bandwidth to work ON the business. I'm drowning in operations.",
     ],
   },
+  concretement: {
+    label: "What it actually is",
+    headingLine1: "Before we talk offer,",
+    headingLine2: "here's what we install.",
+    subline:
+      "Two concepts to grasp. No jargon. Thirty seconds.",
+    blocks: [
+      {
+        term: "An AI OS",
+        definition:
+          "An AI that already knows your business, your clients, your offer, and how you write — permanently. You never re-explain your context. It already has it.",
+        analogy:
+          "ChatGPT, but if it had read your entire Drive, all your calls, and your full method before you ever spoke to it.",
+      },
+      {
+        term: "A Skill",
+        definition:
+          "A task you do often — proposals, call debriefs, carousels, client follow-ups — encoded once, for good. You launch it, the AI produces the result for you. Not a draft. The result.",
+        analogy:
+          "Like an employee who's done this task a thousand times — except they do it again in seconds, not hours.",
+      },
+    ],
+    exampleLabel: "A concrete example",
+    exampleHeading: "You need to write a proposal for a new client.",
+    exampleBefore: {
+      title: "Today",
+      points: [
+        "You open ChatGPT, you paste your offer",
+        "You re-explain your positioning, your style, your client",
+        "You get a generic draft after 20 minutes",
+        "You rewrite it by hand for 30 more minutes",
+        "Total: 50 minutes for a decent proposal",
+      ],
+    },
+    exampleAfter: {
+      title: "With your AI OS",
+      points: [
+        "You launch your \"proposal\" skill",
+        "You give the client name and three sentences of context",
+        "The AI already knows your offer, your style, your positioning",
+        "It outputs a ready-to-send proposal",
+        "Total: 2 minutes. You re-read, you send.",
+      ],
+    },
+  },
   blueprint: {
     label: "The Method",
     headingLine1: "The Vibe Founder OS",
@@ -79,8 +124,8 @@ export const en: Dictionary = {
         items: [
           "7-zone · 25-point audit — prioritized install roadmap",
           "Context OS: business, ICP, method, tone — loaded once, for good",
-          "Claude Code workspace: your permanent AI second brain",
-          "MCPs wired (Gmail, Calendar, Notion, Slack) — the AI acts directly in your tools",
+          "Your personal AI workspace — always on, always up to date",
+          "Direct connections to Gmail, Calendar, Notion, Slack — the AI works inside your tools, not next to them",
         ],
       },
       {
@@ -181,10 +226,10 @@ export const en: Dictionary = {
           "We load all your business context into the system. This is the first 'aha' moment. You never paste context by hand again. Your AI knows your business, your clients, your method — for good.",
       },
       {
-        name: "AI Brain — Claude Code",
-        subtitle: "Contextualized AI workspace",
+        name: "Your AI Brain",
+        subtitle: "Your personal AI workspace",
         description:
-          "We set up a Claude Code workspace dialed in on YOUR business. CLAUDE.md, context stacking, reusable skills, MCPs. A general-purpose AI agent that actually knows your expertise — not a generic AI opened cold.",
+          "We install your personal AI workspace, calibrated on YOUR business. All your context loaded permanently, your skills at your fingertips, your tools wired in. An AI that knows your expertise — not a generic AI opened cold.",
       },
       {
         name: "Skill Store",
@@ -202,7 +247,7 @@ export const en: Dictionary = {
         name: "1:1 Configuration",
         subtitle: "4 setup sessions",
         description:
-          "Four individual sessions to configure Claude + Claude Code + your base model. You're operational in 4 sessions — not 12 calls. From there, you produce on your own.",
+          "Four individual sessions to install your AI OS end to end. Not 12 calls spread across 3 months. In 4 sessions, you're operational. From there, you produce on your own.",
       },
       {
         name: "Ongoing Support",
@@ -219,11 +264,11 @@ export const en: Dictionary = {
     items: [
       {
         q: "I'm not technical — is this still for me?",
-        a: "Claude Code looks like a developer tool, and that scares founders off. In reality, it's an extremely powerful general-purpose AI agent. You don't code. You pilot. If you can explain your process to a human, you can hand it off to Claude.",
+        a: "You don't code anything. You don't install anything alone. We configure your AI OS together over the 4 sessions, and afterward you launch your skills with one click. If you can explain your process to a human, you can pilot an AI.",
       },
       {
         q: "I already use ChatGPT — why would I need more?",
-        a: "ChatGPT cold is an intern with no context. An AI OS configured with your Context OS is a partner who knows your business, your clients, and your method. Night-and-day difference.",
+        a: "ChatGPT cold is an intern you re-brief from scratch every conversation. An AI OS is a partner who already knows your business, your clients, and your method — permanently. The difference is measured in hours per week.",
       },
       {
         q: "What if I buy yet another program I never finish?",
@@ -235,7 +280,7 @@ export const en: Dictionary = {
       },
       {
         q: "This will be obsolete in 6 months.",
-        a: "We teach you the logic, not the tool. Prompting, systems thinking, context stacking: the skill stays even when the tool evolves. You leave with a framework, not a dependency.",
+        a: "We teach you the logic, not the tool. How to think in systems, how to frame your context, how to make AI produce for you: the skill stays even when the tools evolve. You leave with a method, not a dependency.",
       },
       {
         q: "How much time does it take per week?",

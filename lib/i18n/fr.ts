@@ -1,8 +1,8 @@
 export const fr = {
   meta: {
-    title: "FlowOS — Installe un AI OS dans Ton Business en 90 Jours",
+    title: "Ton Plan d'implémentation IA personnalisé — gratuit | FlowOS",
     description:
-      "FlowOS est un accompagnement hybride de 90 jours pour fondateurs établis. On installe un AI OS dans ton business — et on te donne les compétences pour le piloter.",
+      "Réponds à 7 questions et reçois un plan personnalisé : comment installer l'IA et l'automation dans TON business pour sortir de l'opérationnel. Gratuit, en 60 secondes.",
   },
   nav: {
     links: [
@@ -59,6 +59,51 @@ export const fr = {
       "Je n'ai aucune bande passante pour travailler SUR le business. Je suis noyé dans l'opérationnel.",
     ],
   },
+  concretement: {
+    label: "C'est quoi vraiment",
+    headingLine1: "Avant qu'on parle d'offre,",
+    headingLine2: "voilà ce qu'on installe.",
+    subline:
+      "Deux concepts à comprendre. Pas de jargon. Trente secondes.",
+    blocks: [
+      {
+        term: "Un AI OS",
+        definition:
+          "Une IA qui connaît déjà ton business, tes clients, ton offre et ta façon d'écrire — en permanence. Tu ne lui réexpliques jamais ton contexte. Elle l'a déjà.",
+        analogy:
+          "ChatGPT, mais qui aurait lu tout ton Drive, tous tes calls et toute ta méthode avant que tu lui parles.",
+      },
+      {
+        term: "Un Skill",
+        definition:
+          "Une tâche que tu fais souvent — proposition, debrief de call, carrousel, relance client — qu'on encode une fois pour toutes. Tu la lances, l'IA produit le résultat à ta place. Pas un brouillon. Le résultat.",
+        analogy:
+          "Comme un employé qui aurait fait cette tâche mille fois — sauf qu'il la refait en quelques secondes au lieu de deux heures.",
+      },
+    ],
+    exampleLabel: "Un cas concret",
+    exampleHeading: "Tu dois écrire une proposition pour un nouveau client.",
+    exampleBefore: {
+      title: "Aujourd'hui",
+      points: [
+        "Tu ouvres ChatGPT, tu colles ton offre",
+        "Tu réexpliques ton positionnement, ton style, ton client",
+        "Tu obtiens un brouillon générique au bout de 20 minutes",
+        "Tu le réécris à la main pendant 30 minutes",
+        "Total : 50 minutes pour une proposition correcte",
+      ],
+    },
+    exampleAfter: {
+      title: "Avec ton AI OS",
+      points: [
+        "Tu lances ton skill « proposition »",
+        "Tu donnes le nom du client et trois phrases de contexte",
+        "L'IA connaît déjà ton offre, ton style, ton positionnement",
+        "Elle te sort une proposition prête à envoyer",
+        "Total : 2 minutes. Tu relis, tu envoies.",
+      ],
+    },
+  },
   blueprint: {
     label: "La Méthode",
     headingLine1: "Le Vibe Founder OS",
@@ -77,8 +122,8 @@ export const fr = {
         items: [
           "Audit 7 zones · 25 points — roadmap d'installation priorisée",
           "Context OS : business, ICP, méthode, tonalité chargés une bonne fois pour toutes",
-          "Workspace Claude Code : ton second cerveau IA, en permanence",
-          "MCPs branchés (Gmail, Calendar, Notion, Slack) — l'IA agit directement dans tes outils",
+          "Ton workspace IA personnel — toujours allumé, toujours à jour",
+          "Branchements directs avec Gmail, Agenda, Notion, Slack — l'IA agit dans tes outils, pas à côté",
         ],
       },
       {
@@ -179,10 +224,10 @@ export const fr = {
           "On charge tout ton contexte business dans le système. C'est le premier moment déclic. Tu ne recolles plus jamais ton contexte à la main. L'IA connaît ton business, tes clients, ta méthode — pour de bon.",
       },
       {
-        name: "Cerveau IA — Claude Code",
-        subtitle: "Workspace IA contextualisé",
+        name: "Ton Cerveau IA",
+        subtitle: "Ton workspace IA personnel",
         description:
-          "On configure un workspace Claude Code calibré sur TON business. CLAUDE.md, context stacking, skills réutilisables, MCPs. Un agent IA généraliste qui maîtrise ton expertise — pas une IA générique qu'on ouvre à froid.",
+          "On installe ton workspace IA personnel, calibré sur TON business. Tout ton contexte chargé en permanence, tes skills à portée de main, tes outils branchés. Une IA qui connaît ton expertise — pas une IA générique qu'on ouvre à froid.",
       },
       {
         name: "Skill Store",
@@ -200,7 +245,7 @@ export const fr = {
         name: "Configuration 1:1",
         subtitle: "4 sessions de setup",
         description:
-          "Quatre sessions individuelles pour configurer Claude + Claude Code + le modèle de base. Tu es opérationnel en 4 sessions — pas en 12 appels. Derrière, tu produis en autonomie.",
+          "Quatre sessions individuelles pour installer ton AI OS de A à Z. Pas 12 appels étalés sur 3 mois. En 4 sessions, tu es opérationnel. Derrière, tu produis en autonomie.",
       },
       {
         name: "Accompagnement Continu",
@@ -217,11 +262,11 @@ export const fr = {
     items: [
       {
         q: "Je ne suis pas technique — c'est quand même pour moi ?",
-        a: "Claude Code a l'air d'un outil de développeur, et ça fait peur. En vrai, c'est un agent IA généraliste extrêmement puissant. Tu ne codes pas. Tu pilotes. Si tu sais expliquer ton process à un humain, tu sais le confier à Claude.",
+        a: "Tu ne codes rien. Tu n'installes rien tout seul. On configure ton AI OS ensemble pendant les 4 sessions, et après tu lances tes skills d'un clic. Si tu sais expliquer ton process à un humain, tu sais piloter une IA.",
       },
       {
         q: "J'utilise déjà ChatGPT — pourquoi en faire plus ?",
-        a: "ChatGPT à froid, c'est un stagiaire sans contexte. Un AI OS configuré avec ton Context OS, c'est un associé qui connaît ton business, tes clients et ta méthode. La différence est nuit et jour.",
+        a: "ChatGPT à froid, c'est un stagiaire à qui tu réexpliques tout, à chaque conversation. Un AI OS, c'est un associé qui connaît déjà ton business, tes clients, ta méthode — en permanence. La différence se mesure en heures par semaine.",
       },
       {
         q: "Et si j'achète encore un programme que je ne finis pas ?",
@@ -233,7 +278,7 @@ export const fr = {
       },
       {
         q: "Ça va être obsolète dans 6 mois.",
-        a: "On t'apprend la logique, pas l'outil. Le prompting, la pensée en systèmes, le context stacking : la compétence reste, même quand l'outil évolue. Tu repars avec un framework, pas une dépendance.",
+        a: "On t'apprend la logique, pas l'outil. Comment penser en systèmes, comment cadrer ton contexte, comment faire produire l'IA à ta place : la compétence reste, même quand les outils évoluent. Tu repars avec une méthode, pas une dépendance.",
       },
       {
         q: "Ça prend combien de temps par semaine ?",

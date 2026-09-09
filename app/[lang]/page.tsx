@@ -1,645 +1,489 @@
 "use client"
 
-import { useState, useEffect, use } from "react"
+import { useState, useRef, useEffect, useCallback } from "react"
 import Image from "next/image"
-import { notFound } from "next/navigation"
-import { BlueprintScroll } from "@/components/ui/blueprint-scroll"
-import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion"
-import { Backlight } from "@/components/ui/backlight"
-import { LangSwitcher } from "@/components/lang-switcher"
-import { getDictionary, locales, type Lang, type Dictionary } from "@/lib/i18n/dictionaries"
+import { AnimatePresence, motion } from "framer-motion"
 
-// ─── Constants ───────────────────────────────────────────
-const CARD_BG = "rgba(255,255,255,0.55)"
-const CARD_BORDER = "rgba(255,255,255,0.75)"
-const CARD_SHADOW = "0 2px 24px rgba(0,0,0,0.06)"
+// ─── Brand ───────────────────────────────────────────────
+const LOGO = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/FlowOS-JtznK6RZZIiu5LvIS7iMeGfWun0D73.png"
+const IG_URL = "https://www.instagram.com/wissamdarsouni"
 
-// ─── GlassCard ───────────────────────────────────────────
-function GlassCard({
-  children,
-  className = "",
-  style = {},
-}: {
-  children: React.ReactNode
-  className?: string
-  style?: React.CSSProperties
-}) {
-  return (
-    <div
-      className={`rounded-3xl overflow-hidden ${className}`}
-      style={{
-        background: CARD_BG,
-        backdropFilter: "blur(40px) saturate(200%)",
-        WebkitBackdropFilter: "blur(40px) saturate(200%)",
-        border: `1px solid ${CARD_BORDER}`,
-        boxShadow: CARD_SHADOW,
-        ...style,
-      }}
-    >
-      {children}
-    </div>
-  )
+// ─── Dark theme — matches the FlowOS skill-store DA ──────
+const BG = "#000000"
+const TEXT = "#FFFFFF"           // primary text / headings
+const TEXT_MUTED = "#8E8E93"     // body / captions (steel)
+const OXBLOOD = "#7B2D26"        // accent FILL (CTA, progress, selected) — carousel DA
+const PEACH = "#E89B91"          // accent TEXT on dark (highlight words) — carousel DA
+const CARD_BG = "rgba(28,28,30,0.56)"
+const CARD_BORDER = "rgba(58,58,60,0.7)"
+const CARD_SHADOW = "0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.04)"
+const PANEL_BG = "rgba(0,0,0,0.72)"        // top/bottom fixed bars
+const INPUT_BORDER = "rgba(255,255,255,0.22)"
+
+// ─── Questions ───────────────────────────────────────────
+type Option = string
+type Step = {
+  id: string
+  type: "text" | "email" | "textarea" | "select"
+  label: string
+  hint?: string
+  placeholder?: string
+  prefix?: string
+  required?: boolean
+  options?: Option[]
 }
 
-// ─── Tag chip ─────────────────────────────────────────────
-function Tag({ children }: { children: React.ReactNode }) {
+const STEPS: Step[] = [
+  {
+    id: "prenom",
+    type: "text",
+    label: "Comment tu t'appelles ?",
+    placeholder: "Ton prénom",
+    required: true,
+  },
+  {
+    id: "email",
+    type: "email",
+    label: "Ton meilleur email ?",
+    hint: "C'est là que je t'envoie ton plan.",
+    placeholder: "toi@email.com",
+    required: true,
+  },
+  {
+    id: "instagram",
+    type: "text",
+    label: "Ton compte Instagram ?",
+    hint: "Pour t'envoyer ton plan directement en DM.",
+    placeholder: "ton_compte",
+    prefix: "@",
+    required: true,
+  },
+  {
+    id: "activite",
+    type: "select",
+    label: "Tu fais quoi, aujourd'hui ?",
+    required: true,
+    options: [
+      "Coach",
+      "Consultant / Freelance",
+      "Fondateur d'agence",
+      "Infopreneur / Créateur",
+      "Autre",
+    ],
+  },
+  {
+    id: "offre",
+    type: "textarea",
+    label: "C'est quoi ton offre principale ?",
+    hint: "Décris en 1-2 phrases ce que tu vends et à qui. Ça me sert à comprendre tes process et personnaliser ton plan.",
+    placeholder: "Ex : j'accompagne des coachs à structurer leur offre…",
+    required: true,
+  },
+  {
+    id: "ca",
+    type: "select",
+    label: "Ton chiffre d'affaires mensuel actuel ?",
+    required: true,
+    options: [
+      "Moins de 2 000€",
+      "2 000€ – 5 000€",
+      "5 000€ – 10 000€",
+      "10 000€ – 25 000€",
+      "25 000€ et +",
+    ],
+  },
+  {
+    id: "goulot",
+    type: "select",
+    label: "C'est quoi ton plus gros frein pour scaler ?",
+    required: true,
+    options: [
+      "Je suis noyé dans l'opérationnel",
+      "Je perds des leads dans mes DMs / mon suivi",
+      "Je dépends de freelances pour tout ce qui est tech",
+      "Aucun système ne tourne sans moi",
+      "Mon expertise vit dans ma tête",
+      "Autre",
+    ],
+  },
+  {
+    id: "dejaEssaye",
+    type: "textarea",
+    label: "Qu'est-ce que t'as déjà essayé pour le régler ?",
+    hint: "Plus tu es précis, plus ton plan sera personnalisé.",
+    placeholder: "Écris ta réponse ici…",
+    required: false,
+  },
+]
+
+const isValidEmail = (v: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim())
+
+// ─── Persistent banners ──────────────────────────────────
+function TopBanner() {
   return (
-    <span
-      className="inline-block text-[10px] font-sans font-semibold tracking-widest uppercase"
-      style={{
-        background: "rgba(0,0,0,0.06)",
-        border: "1px solid rgba(0,0,0,0.10)",
-        color: "var(--graphite)",
-        borderRadius: "9999px",
-        padding: "3px 10px",
-      }}
-    >
-      {children}
-    </span>
-  )
-}
-
-// ─── Section label ────────────────────────────────────────
-function Label({ children }: { children: React.ReactNode }) {
-  return (
-    <span className="text-[10px] font-sans font-semibold tracking-widest uppercase" style={{ color: "var(--steel)" }}>
-      {children}
-    </span>
-  )
-}
-
-// ─── Orb ─────────────────────────────────────────────────
-function Orb({ color = "#FFFFFF", style = {} }: { color?: string; style?: React.CSSProperties }) {
-  return (
-    <div
-      className="absolute pointer-events-none rounded-full"
-      style={{
-        background: `radial-gradient(circle, ${color}, transparent 70%)`,
-        filter: "blur(80px)",
-        opacity: 0.55,
-        ...style,
-      }}
-    />
-  )
-}
-
-// ─── OfferCard ────────────────────────────────────────────
-function OfferCard({ item, wide }: { item: Dictionary["offer"]["items"][number]; wide: boolean }) {
-  return (
-    <GlassCard className={`p-7 flex flex-col gap-4 ${wide ? "md:col-span-2" : "md:col-span-1"}`}>
-      <div className="flex flex-col gap-1.5">
-        <span className="font-serif font-bold text-base" style={{ color: "var(--charcoal)" }}>{item.name}</span>
-        <Label>{item.subtitle}</Label>
-      </div>
-      <p className="text-sm leading-relaxed" style={{ color: "var(--steel)" }}>{item.description}</p>
-      {item.highlight && (
-        <p
-          className="text-xs italic leading-relaxed pt-3 border-t"
-          style={{ borderColor: "rgba(0,0,0,0.07)", color: "var(--graphite)" }}
-        >
-          {item.highlight}
-        </p>
-      )}
-      {item.examples && (
-        <ul className="flex flex-col gap-2 pt-2">
-          {item.examples.map((ex) => (
-            <li key={ex} className="flex items-start gap-2.5">
-              <span className="w-1 h-1 rounded-full shrink-0 mt-1.5" style={{ background: "var(--graphite)" }} />
-              <span className="text-xs leading-relaxed" style={{ color: "var(--steel)" }}>{ex}</span>
-            </li>
-          ))}
-        </ul>
-      )}
-    </GlassCard>
-  )
-}
-
-// ─── Nav ─────────────────────────────────────────────────
-function Nav({ dict, lang }: { dict: Dictionary["nav"]; lang: Lang }) {
-  const [scrolled, setScrolled] = useState(false)
-  useEffect(() => {
-    const fn = () => setScrolled(window.scrollY > 32)
-    window.addEventListener("scroll", fn, { passive: true })
-    return () => window.removeEventListener("scroll", fn)
-  }, [])
-
-  return (
-    <header className="fixed top-0 inset-x-0 z-50 flex justify-center pt-4 px-4">
-      <nav
-        className="flex items-center justify-between gap-4 px-5 py-2.5 w-full max-w-2xl rounded-full transition-all duration-300"
-        style={{
-          background: scrolled ? "rgba(255,255,255,0.80)" : "rgba(255,255,255,0.60)",
-          backdropFilter: "blur(24px) saturate(180%)",
-          WebkitBackdropFilter: "blur(24px) saturate(180%)",
-          border: "1px solid rgba(255,255,255,0.85)",
-          boxShadow: scrolled ? "0 4px 32px rgba(0,0,0,0.10)" : "0 2px 12px rgba(0,0,0,0.05)",
-        }}
-      >
-        {/* Logo */}
-        <a href="#" className="flex items-center shrink-0">
-          <Image
-            src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/FlowOS-JtznK6RZZIiu5LvIS7iMeGfWun0D73.png"
-            alt="Flow OS"
-            width={80}
-            height={28}
-            className="h-6 w-auto object-contain"
-            priority
-          />
-        </a>
-
-        {/* Links */}
-        <div className="hidden md:flex items-center gap-5">
-          {dict.links.map(({ label, href }) => (
-            <a
-              key={href}
-              href={href}
-              className="text-[11px] font-sans transition-colors"
-              style={{ color: "var(--steel)" }}
-              onMouseEnter={e => (e.currentTarget.style.color = "var(--charcoal)")}
-              onMouseLeave={e => (e.currentTarget.style.color = "var(--steel)")}
-            >
-              {label}
-            </a>
-          ))}
-        </div>
-
-        <div className="flex items-center gap-4">
-          <LangSwitcher currentLang={lang} />
-          {/* CTA */}
-          <a
-            href="https://www.instagram.com/wissamdarsouni"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="shrink-0 px-4 py-1.5 rounded-full text-[11px] font-sans font-semibold text-white transition-all duration-200"
-            style={{ background: "var(--charcoal)" }}
-          >
-            {dict.cta}
-          </a>
-        </div>
-      </nav>
+    <header className="fixed top-0 inset-x-0 z-50 flex flex-col items-center gap-2 px-4 pt-4 pb-3 backdrop-blur-xl"
+      style={{ background: PANEL_BG, borderBottom: `1px solid ${CARD_BORDER}` }}>
+      <a href={IG_URL} target="_blank" rel="noopener noreferrer" className="flex items-center">
+        <Image src={LOGO} alt="FlowOS" width={88} height={30} className="h-6 w-auto object-contain" priority />
+      </a>
+      <p className="text-center text-[13px] sm:text-sm font-semibold leading-snug max-w-xl" style={{ color: TEXT }}>
+        Reçois ton <span style={{ color: PEACH }}>Plan d'implémentation IA personnalisé</span> — gratuit, en moins de 60 secondes.
+      </p>
     </header>
   )
 }
 
-// ─── Main Page ───────────────────────────────────────────
-export default function Page({ params }: { params: Promise<{ lang: Lang }> }) {
-  const { lang } = use(params)
-  if (!locales.includes(lang)) notFound()
-  const dict = getDictionary(lang)
+function BottomBar() {
+  return (
+    <footer className="fixed bottom-0 inset-x-0 z-50 flex flex-wrap items-center justify-center gap-x-6 gap-y-1 px-4 py-2.5 backdrop-blur-xl text-[11px] sm:text-xs font-medium"
+      style={{ background: PANEL_BG, borderTop: `1px solid ${CARD_BORDER}`, color: TEXT_MUTED }}>
+      <span>⭐ Ton plan perso en moins de 60 secondes</span>
+      <span className="hidden sm:inline">⭐ Construit sur-mesure pour ton business</span>
+    </footer>
+  )
+}
 
-  const { hero, pourquoi, resultats, icp, offer, faq, garantie, finalCta } = dict
+// ─── Primary button ──────────────────────────────────────
+function Cta({ children, onClick, disabled, type = "button" }: {
+  children: React.ReactNode; onClick?: () => void; disabled?: boolean; type?: "button" | "submit"
+}) {
+  return (
+    <button
+      type={type}
+      onClick={onClick}
+      disabled={disabled}
+      className="px-8 py-3.5 rounded-full text-sm font-semibold text-white transition-all duration-200 hover:-translate-y-0.5 disabled:opacity-40 disabled:translate-y-0 disabled:cursor-not-allowed"
+      style={{ background: OXBLOOD, boxShadow: "0 4px 24px rgba(123,45,38,0.45)" }}
+    >
+      {children}
+    </button>
+  )
+}
+
+// ─── AI OS visual (A/B variant A) ────────────────────────
+// Wissam's hero visual (public/ai-os-visual.html, self-contained, transparent
+// bg, native 2560×1440). Rendered live in an iframe so the real browser loads
+// the exact fonts — faithful to the original design, crisp at any size.
+// The iframe is kept at native size and scaled to the container width (the HTML
+// already scales its own stage to 1:1 at 2560×1440), so the full composition
+// always shows, responsively. Decorative (no pointer events).
+const VISUAL_W = 2560
+const VISUAL_H = 1440
+function AiOsVisual() {
+  const wrapRef = useRef<HTMLDivElement>(null)
+  const [scale, setScale] = useState(0)
+  useEffect(() => {
+    const el = wrapRef.current
+    if (!el) return
+    const update = () => setScale(el.clientWidth / VISUAL_W)
+    update()
+    const ro = new ResizeObserver(update)
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [])
+  return (
+    <div ref={wrapRef} className="w-full rounded-3xl overflow-hidden relative"
+      style={{ aspectRatio: `${VISUAL_W} / ${VISUAL_H}` }}>
+      {scale > 0 && (
+        <iframe
+          src="/ai-os-visual.html"
+          title="Aperçu d'un AI OS FlowOS"
+          scrolling="no"
+          style={{
+            position: "absolute", top: 0, left: 0,
+            width: VISUAL_W, height: VISUAL_H,
+            transform: `scale(${scale})`, transformOrigin: "top left",
+            border: 0, background: "transparent", pointerEvents: "none",
+          }}
+        />
+      )}
+    </div>
+  )
+}
+
+// ─── Page ────────────────────────────────────────────────
+export default function Page() {
+  // -1 = intro, 0..n = questions, n = done handled via `done`
+  const [stage, setStage] = useState<number>(-1)
+  const [done, setDone] = useState(false)
+  const [answers, setAnswers] = useState<Record<string, string>>({})
+  const [error, setError] = useState<string | null>(null)
+  const sessionId = useRef<string>("")
+  const inputRef = useRef<HTMLInputElement | HTMLTextAreaElement | null>(null)
+
+  // Stable session id (survives refresh) so partial answers map to one person.
+  // Dev shortcut: `?skip=1` jumps straight to the last question (verify redirect).
+  useEffect(() => {
+    const SID_KEY = "flowos_lead_session"
+    let sid = localStorage.getItem(SID_KEY)
+    if (!sid) {
+      sid = (crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random().toString(36).slice(2)}`)
+      localStorage.setItem(SID_KEY, sid)
+    }
+    sessionId.current = sid
+    if (new URLSearchParams(window.location.search).get("skip") === "1") {
+      setStage(STEPS.length - 1)
+    }
+  }, [])
+
+  useEffect(() => {
+    // focus the field when a new text question shows
+    if (stage >= 0 && !done) inputRef.current?.focus()
+  }, [stage, done])
+
+  // Fire-and-forget partial capture to /api/lead → n8n.
+  const capture = useCallback((data: Record<string, string>, completed: boolean, reachedStep: number) => {
+    // Always include every question field (empty until answered) so the webhook
+    // payload is constant whatever step the visitor stops at — stable n8n mapping.
+    const allFields = Object.fromEntries(STEPS.map((s) => [s.id, data[s.id] ?? ""]))
+    const body = JSON.stringify({
+      sessionId: sessionId.current,
+      variant: "A",
+      completed,
+      reachedStep,
+      ...allFields,
+    })
+    try {
+      const blob = new Blob([body], { type: "application/json" })
+      if (navigator.sendBeacon && navigator.sendBeacon("/api/lead", blob)) return
+    } catch {/* fall through to fetch */}
+    fetch("/api/lead", { method: "POST", headers: { "Content-Type": "application/json" }, body, keepalive: true }).catch(() => {})
+  }, [])
+
+  const step = stage >= 0 ? STEPS[stage] : null
+
+  const setValue = (v: string) => {
+    if (!step) return
+    setAnswers((a) => ({ ...a, [step.id]: v }))
+    if (error) setError(null)
+  }
+
+  const advance = (nextAnswers: Record<string, string>) => {
+    const reached = stage + 1
+    // Capture every step (so abandons are saved with whatever they filled).
+    capture(nextAnswers, reached >= STEPS.length, reached)
+    if (reached >= STEPS.length) {
+      setDone(true)
+    } else {
+      setStage(reached)
+    }
+  }
+
+  const handleNext = () => {
+    if (!step) return
+    const val = (answers[step.id] ?? "").trim()
+    if (step.required && !val) {
+      setError("Cette réponse est obligatoire.")
+      return
+    }
+    if (step.type === "email" && val && !isValidEmail(val)) {
+      setError("Hmm, cet email ne semble pas valide.")
+      return
+    }
+    advance({ ...answers, [step.id]: val })
+  }
+
+  const handleSelect = (option: string) => {
+    if (!step) return
+    const next = { ...answers, [step.id]: option }
+    setAnswers(next)
+    setError(null)
+    // small delay for the selected state to register visually
+    setTimeout(() => advance(next), 180)
+  }
+
+  const progress = stage < 0 ? 0 : ((stage + (done ? 1 : 0)) / STEPS.length) * 100
 
   return (
-    <>
-      <Nav dict={dict.nav} lang={lang} />
-      <main className="min-h-screen overflow-x-hidden font-sans" style={{ backgroundColor: "var(--page-bg)" }}>
+    <main className="relative min-h-screen overflow-x-hidden font-sans" style={{ background: BG, color: TEXT }}>
+      {/* Atmospherics — soft orbs only (dot grid removed) */}
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+        <div className="absolute" style={{
+          top: "-15%", left: "20%", width: 700, height: 700,
+          background: "radial-gradient(circle, rgba(162,170,173,0.13) 0%, transparent 60%)", filter: "blur(40px)",
+        }} />
+        <div className="absolute" style={{
+          bottom: "-25%", right: "-5%", width: 600, height: 600,
+          background: "radial-gradient(circle, rgba(142,142,147,0.10) 0%, transparent 60%)", filter: "blur(50px)",
+        }} />
+      </div>
 
-        {/* ───── HERO ───────────────────────────────────────── */}
-        <section className="relative min-h-screen flex items-center justify-center px-4 pt-28 pb-12">
-          <Orb color="#FFFFFF" style={{ width: 700, height: 700, top: "-15%", left: "-10%" }} />
-          <Orb color="#C8C8C8" style={{ width: 500, height: 500, bottom: "-10%", right: "-8%" }} />
+      <TopBanner />
+      <BottomBar />
 
-          <div className="relative z-10 flex flex-col items-center text-center gap-8 max-w-4xl w-full mx-auto">
-            {/* Eyebrow */}
-            <div
-              className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full"
-              style={{ background: "rgba(255,255,255,0.60)", border: "1px solid rgba(255,255,255,0.80)" }}
-            >
-              <span className="w-1.5 h-1.5 rounded-full" style={{ background: "var(--graphite)" }} />
-              <span className="text-[10px] font-sans font-semibold tracking-widest uppercase" style={{ color: "var(--steel)" }}>
-                {hero.eyebrow}
-              </span>
-            </div>
+      {/* progress bar */}
+      {stage >= 0 && (
+        <div className="fixed top-[68px] sm:top-[72px] inset-x-0 z-40 h-[3px]" style={{ background: "rgba(255,255,255,0.08)" }}>
+          <motion.div className="h-full" style={{ background: PEACH }}
+            animate={{ width: `${progress}%` }} transition={{ duration: 0.4, ease: "easeOut" }} />
+        </div>
+      )}
 
-            {/* Headline */}
-            <h1 className="font-serif font-bold text-5xl sm:text-6xl lg:text-7xl xl:text-[80px] leading-[1.04] tracking-tight text-balance" style={{ color: "var(--charcoal)" }}>
-              {hero.headline.map((line, i) => (
-                <span key={i}>
-                  {i > 0 && <br />}
-                  <span style={{ color: i === hero.headline.length - 1 ? "var(--graphite)" : "var(--charcoal)" }}>
-                    {line}
-                  </span>
+      <div className="relative z-10 min-h-screen flex items-center justify-center px-5 pt-28 pb-24">
+        <AnimatePresence mode="wait">
+          {/* ───── INTRO ───── */}
+          {stage === -1 && !done && (
+            <motion.section key="intro"
+              initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -16 }}
+              transition={{ duration: 0.35 }}
+              className="flex flex-col items-center text-center gap-7 max-w-2xl w-full">
+              <h1 className="font-serif font-bold text-4xl sm:text-5xl lg:text-6xl leading-[1.06] tracking-tight text-balance" style={{ color: TEXT }}>
+                Je te montre comment <span style={{ color: PEACH }}>j'installerais l'IA</span> dans ton business.
+              </h1>
+              <p className="text-base sm:text-lg max-w-lg leading-relaxed" style={{ color: TEXT_MUTED }}>
+                Réponds à 8 questions rapides. Je regarde ta situation et je t'envoie un <strong style={{ color: TEXT }}>plan d'implémentation IA personnalisé</strong> — comment je systémiserais TON business si j'étais à ta place. Gratuit.
+              </p>
+
+              <div className="w-full max-w-2xl mt-2">
+                <AiOsVisual />
+              </div>
+
+              <Cta onClick={() => setStage(0)}>Recevoir mon plan →</Cta>
+              <p className="text-xs" style={{ color: TEXT_MUTED }}>Moins de 60 secondes · 100% gratuit</p>
+            </motion.section>
+          )}
+
+          {/* ───── QUESTION ───── */}
+          {step && !done && (
+            <motion.section key={step.id}
+              initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -24 }}
+              transition={{ duration: 0.3 }}
+              className="flex flex-col gap-6 max-w-xl w-full">
+              <div className="flex flex-col gap-2">
+                <span className="text-xs font-semibold tracking-widest uppercase" style={{ color: PEACH }}>
+                  Question {stage + 1} / {STEPS.length}
                 </span>
-              ))}
-            </h1>
+                <h2 className="font-serif font-bold text-2xl sm:text-3xl leading-snug" style={{ color: TEXT }}>
+                  {step.label}
+                </h2>
+                {step.hint && <p className="text-sm" style={{ color: TEXT_MUTED }}>{step.hint}</p>}
+              </div>
 
-            {/* Subline */}
-            <p className="text-base sm:text-lg max-w-xl leading-relaxed" style={{ color: "var(--steel)" }}>
-              {hero.subline}
-            </p>
-
-            {/* Stats bento */}
-            <div className="grid grid-cols-3 gap-3 mt-6 w-full max-w-md">
-              {hero.stats.map((s) => (
-                <GlassCard key={s.value} className="flex flex-col items-center gap-1 py-5 px-2">
-                  <span className="font-serif font-bold text-xl sm:text-2xl" style={{ color: "var(--charcoal)" }}>{s.value}</span>
-                  <span className="text-[9px] font-sans text-center leading-tight" style={{ color: "var(--steel)" }}>{s.label}</span>
-                </GlassCard>
-              ))}
-            </div>
-
-            {/* Video */}
-            <Backlight className="mt-10 w-full max-w-5xl" blur={25}>
-              <iframe
-                className="w-full aspect-video rounded-3xl"
-                src="https://www.youtube.com/embed/g_SOqAMZdnM?rel=0&modestbranding=1&iv_load_policy=3&disablekb=1&color=white"
-                title="FlowOS"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-              />
-            </Backlight>
-
-            {/* CTAs */}
-            <div className="flex flex-col sm:flex-row items-center gap-3 mt-10">
-              <a
-                href="#methode"
-                className="px-8 py-3.5 rounded-full text-sm font-semibold text-white transition-all duration-200 hover:-translate-y-0.5"
-                style={{ background: "var(--charcoal)", boxShadow: "0 4px 16px rgba(0,0,0,0.15)" }}
-              >
-                {hero.ctaPrimary}
-              </a>
-            </div>
-          </div>
-        </section>
-
-        {/* ───── POURQUOI ───────────────────────────────────── */}
-        <section id="pourquoi" className="relative py-14 px-4 overflow-hidden">
-          <Orb color="#FFFFFF" style={{ width: 600, height: 600, top: 0, right: "-15%" }} />
-
-          <div className="mx-auto max-w-5xl relative z-10">
-            <div className="flex flex-col gap-4 mb-16">
-              <Label>{pourquoi.label}</Label>
-              <h2 className="font-serif font-bold text-4xl sm:text-5xl tracking-tight text-balance" style={{ color: "var(--charcoal)" }}>
-                {pourquoi.headingLine1}
-                <br />
-                <span style={{ color: "var(--graphite)" }}>{pourquoi.headingLine2}</span>
-              </h2>
-              <p className="text-lg sm:text-xl font-serif font-medium leading-snug max-w-2xl" style={{ color: "var(--graphite)" }}>
-                {pourquoi.subline}
-              </p>
-            </div>
-
-            {/* 3 cards */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-12">
-              {pourquoi.cards.map((d) => (
-                <GlassCard key={d.num} className="p-7 flex flex-col gap-5">
-                  <div className="flex items-center justify-between">
-                    <div
-                      className="w-9 h-9 rounded-xl flex items-center justify-center"
-                      style={{ background: "rgba(0,0,0,0.05)", border: "1px solid rgba(0,0,0,0.08)" }}
-                    >
-                      {d.num === "01" && (
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--graphite)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M21 12a9 9 0 1 1-6.219-8.56" /><path d="M21 3v4h-4" />
-                        </svg>
-                      )}
-                      {d.num === "02" && (
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--graphite)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" />
-                        </svg>
-                      )}
-                      {d.num === "03" && (
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--graphite)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-                        </svg>
-                      )}
-                    </div>
-                    <span className="font-serif font-bold text-5xl" style={{ color: "rgba(0,0,0,0.05)" }}>{d.num}</span>
-                  </div>
-                  <h3 className="font-serif font-semibold text-base" style={{ color: "var(--charcoal)" }}>{d.title}</h3>
-                  <p className="text-sm leading-relaxed" style={{ color: "var(--steel)" }}>{d.desc}</p>
-                </GlassCard>
-              ))}
-            </div>
-
-          </div>
-        </section>
-
-        {/* ───── BLUEPRINT OS ───────────────────────────────── */}
-        <BlueprintScroll dict={dict.blueprint} />
-
-        {/* ───── TRANSFORMATIONS ────────────────────────────── */}
-        <section id="resultats" className="relative py-14 px-4 overflow-hidden">
-          <Orb color="#C8C8C8" style={{ width: 500, height: 500, bottom: 0, left: "-8%" }} />
-
-          <div className="mx-auto max-w-5xl relative z-10">
-            <div className="flex flex-col gap-4 mb-16">
-              <Label>{resultats.label}</Label>
-              <h2 className="font-serif font-bold text-4xl sm:text-5xl tracking-tight text-balance" style={{ color: "var(--charcoal)" }}>
-                {resultats.headingLine1}
-                <br />
-                <span style={{ color: "var(--graphite)" }}>{resultats.headingLine2}</span>
-              </h2>
-              <p className="text-base leading-relaxed max-w-lg" style={{ color: "var(--steel)" }}>
-                {resultats.subline}
-              </p>
-            </div>
-
-            {/* Before / After */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-              {/* AVANT */}
-              <GlassCard
-                className="p-8 flex flex-col gap-6"
-                style={{ background: "rgba(255,235,235,0.55)", border: "1px solid rgba(255,200,200,0.60)" }}
-              >
-                <div className="flex items-center gap-2.5">
-                  <span className="w-2 h-2 rounded-full bg-red-400" />
-                  <span className="font-sans text-[10px] font-semibold uppercase tracking-widest text-red-500">
-                    {resultats.beforeLabel}
-                  </span>
+              {/* text / email */}
+              {(step.type === "text" || step.type === "email") && (
+                <div className="flex items-center border-b-2 pb-1" style={{ borderColor: error ? "#E5736B" : INPUT_BORDER }}>
+                  {step.prefix && <span className="text-xl sm:text-2xl mr-1" style={{ color: TEXT_MUTED }}>{step.prefix}</span>}
+                  <input
+                    ref={inputRef as React.RefObject<HTMLInputElement>}
+                    type={step.type === "email" ? "email" : "text"}
+                    inputMode={step.type === "email" ? "email" : "text"}
+                    autoComplete={step.type === "email" ? "email" : "off"}
+                    value={answers[step.id] ?? ""}
+                    onChange={(e) => setValue(e.target.value)}
+                    onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); handleNext() } }}
+                    placeholder={step.placeholder}
+                    className="w-full bg-transparent text-xl sm:text-2xl outline-none placeholder:opacity-40"
+                    style={{ color: TEXT }}
+                  />
                 </div>
-                <ul className="flex flex-col gap-5">
-                  {resultats.before.map((item) => (
-                    <li key={item.label} className="flex items-start gap-3">
-                      <span
-                        className="mt-0.5 w-4 h-4 rounded-full shrink-0 flex items-center justify-center"
-                        style={{ background: "rgba(239,68,68,0.12)", border: "1px solid rgba(239,68,68,0.20)" }}
-                      >
-                        <svg width="7" height="7" viewBox="0 0 8 8" fill="none">
-                          <path d="M6 2L2 6M2 2l4 4" stroke="#ef4444" strokeWidth="1.5" strokeLinecap="round" />
-                        </svg>
-                      </span>
-                      <div>
-                        <p className="font-serif font-semibold text-sm mb-0.5" style={{ color: "var(--charcoal)" }}>{item.label}</p>
-                        <p className="text-xs leading-relaxed" style={{ color: "var(--steel)" }}>{item.desc}</p>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              </GlassCard>
+              )}
 
-              {/* APRÈS */}
-              <GlassCard
-                className="p-8 flex flex-col gap-6"
-                style={{ background: "rgba(255,255,255,0.65)", border: "1px solid rgba(255,255,255,0.85)" }}
-              >
-                <div className="flex items-center gap-2.5">
-                  <span className="w-2 h-2 rounded-full" style={{ background: "var(--graphite)" }} />
-                  <span className="font-sans text-[10px] font-semibold uppercase tracking-widest" style={{ color: "var(--graphite)" }}>
-                    {resultats.afterLabel}
-                  </span>
-                </div>
-                <ul className="flex flex-col gap-5">
-                  {resultats.after.map((item) => (
-                    <li key={item.label} className="flex items-start gap-3">
-                      <span
-                        className="mt-0.5 w-4 h-4 rounded-full shrink-0 flex items-center justify-center"
-                        style={{ background: "rgba(0,0,0,0.06)", border: "1px solid rgba(0,0,0,0.12)" }}
-                      >
-                        <svg width="7" height="7" viewBox="0 0 8 8" fill="none">
-                          <path d="M1.5 4l2 2 3-3.5" stroke="#3A3A3C" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                        </svg>
-                      </span>
-                      <div>
-                        <p className="font-serif font-semibold text-sm mb-0.5" style={{ color: "var(--charcoal)" }}>{item.label}</p>
-                        <p className="text-xs leading-relaxed" style={{ color: "var(--steel)" }}>{item.desc}</p>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              </GlassCard>
-            </div>
+              {/* textarea */}
+              {step.type === "textarea" && (
+                <textarea
+                  ref={inputRef as React.RefObject<HTMLTextAreaElement>}
+                  value={answers[step.id] ?? ""}
+                  onChange={(e) => setValue(e.target.value)}
+                  onKeyDown={(e) => { if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) { e.preventDefault(); handleNext() } }}
+                  placeholder={step.placeholder}
+                  rows={3}
+                  className="w-full bg-transparent text-lg outline-none border-b-2 pb-2 resize-none placeholder:opacity-40"
+                  style={{ color: TEXT, borderColor: INPUT_BORDER }}
+                />
+              )}
 
-            {/* ROI proof */}
-            <GlassCard className="p-8 sm:p-10">
-              <Label>{resultats.roiLabel}</Label>
-              <p className="font-serif font-bold text-2xl sm:text-3xl leading-snug mt-5" style={{ color: "var(--charcoal)" }}>
-                {resultats.roiLine1}
-              </p>
-              <p className="font-serif font-bold text-2xl sm:text-3xl mt-1 mb-5" style={{ color: "var(--graphite)" }}>
-                {resultats.roiLine2}
-              </p>
-              <p className="text-sm leading-relaxed max-w-xl" style={{ color: "var(--steel)" }}>
-                {resultats.roiText}
-              </p>
-            </GlassCard>
-          </div>
-        </section>
-
-        {/* ───── ICP ────────────────────────────────────────── */}
-        <section className="relative py-14 px-4 overflow-hidden">
-          <Orb color="#FFFFFF" style={{ width: 600, height: 600, top: "10%", left: "50%", transform: "translateX(-50%)" }} />
-
-          <div className="mx-auto max-w-5xl relative z-10">
-            <div className="flex flex-col gap-4 mb-16">
-              <Label>{icp.label}</Label>
-              <h2 className="font-serif font-bold text-4xl sm:text-5xl tracking-tight text-balance" style={{ color: "var(--charcoal)" }}>
-                {icp.headingLine1}
-                <br />
-                <span style={{ color: "var(--graphite)" }}>{icp.headingLine2}</span>
-              </h2>
-              <p className="text-base leading-relaxed max-w-lg" style={{ color: "var(--steel)" }}>
-                {icp.subline}
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <GlassCard className="p-8">
-                <Label>{icp.forLabel}</Label>
-                <div className="flex flex-col gap-4 mt-6">
-                  {icp.forYou.map((d) => (
-                    <div key={d} className="flex items-start gap-3">
-                      <span
-                        className="w-5 h-5 rounded-full flex items-center justify-center shrink-0 text-[10px] mt-0.5"
-                        style={{ background: "rgba(0,0,0,0.85)", color: "#fff" }}
-                      >
-                        ✓
-                      </span>
-                      <span className="text-sm leading-relaxed" style={{ color: "var(--charcoal)" }}>{d}</span>
-                    </div>
-                  ))}
-                </div>
-              </GlassCard>
-
-              <GlassCard className="p-8">
-                <Label>{icp.notForLabel}</Label>
-                <div className="flex flex-col gap-4 mt-6">
-                  {icp.notFor.map((d) => (
-                    <div key={d} className="flex items-start gap-3">
-                      <span
-                        className="w-5 h-5 rounded-full flex items-center justify-center shrink-0 text-[9px] mt-0.5"
-                        style={{ background: "rgba(0,0,0,0.05)", border: "1px solid rgba(0,0,0,0.09)", color: "rgba(0,0,0,0.25)" }}
-                      >
-                        ✕
-                      </span>
-                      <span className="text-sm leading-relaxed" style={{ color: "var(--steel)" }}>{d}</span>
-                    </div>
-                  ))}
-                </div>
-              </GlassCard>
-            </div>
-          </div>
-        </section>
-
-        {/* ───── OFFER STACK ────────────────────────────────── */}
-        <section id="offre" className="relative py-14 px-4 overflow-hidden">
-          <Orb color="#C8C8C8" style={{ width: 800, height: 800, top: "-20%", right: "-20%" }} />
-
-          <div className="mx-auto max-w-5xl relative z-10">
-            <div className="flex flex-col gap-4 mb-16">
-              <Label>{offer.label}</Label>
-              <h2 className="font-serif font-bold text-4xl sm:text-5xl tracking-tight text-balance" style={{ color: "var(--charcoal)" }}>
-                {offer.headingLine1}{" "}
-                <span style={{ color: "var(--graphite)" }}>{offer.headingLine2}</span>
-              </h2>
-              <p className="text-base leading-relaxed max-w-lg" style={{ color: "var(--steel)" }}>
-                {offer.subline}
-              </p>
-            </div>
-
-            {/* Alternating bento */}
-            <div className="flex flex-col gap-4 mb-10">
-              {[
-                [offer.items[0], offer.items[1]],
-                [offer.items[2], offer.items[3]],
-                [offer.items[4], offer.items[5]],
-              ].map((row, rowIdx) => (
-                <div key={rowIdx} className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  {row.map((item, colIdx) => {
-                    const isWide = rowIdx % 2 === 0 ? colIdx === 0 : colIdx === 1
-                    return <OfferCard key={item.name} item={item} wide={isWide} />
+              {/* select */}
+              {step.type === "select" && (
+                <div className="flex flex-col gap-2.5">
+                  {step.options!.map((opt) => {
+                    const selected = answers[step.id] === opt
+                    return (
+                      <button key={opt} onClick={() => handleSelect(opt)}
+                        className="text-left px-5 py-3.5 rounded-2xl text-[15px] font-medium transition-all duration-150 hover:-translate-y-0.5"
+                        style={{
+                          background: selected ? OXBLOOD : CARD_BG,
+                          color: selected ? "#fff" : TEXT,
+                          border: `1px solid ${selected ? OXBLOOD : CARD_BORDER}`,
+                          boxShadow: CARD_SHADOW,
+                        }}>
+                        {opt}
+                      </button>
+                    )
                   })}
                 </div>
-              ))}
-            </div>
+              )}
 
-            <a
-              href="https://www.instagram.com/wissamdarsouni"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-full flex items-center justify-center py-4 rounded-full text-sm font-sans font-semibold text-white transition-all duration-200 hover:-translate-y-0.5"
-              style={{ background: "var(--charcoal)", boxShadow: "0 4px 20px rgba(0,0,0,0.15)" }}
-            >
-              {offer.ctaButton}
-            </a>
-          </div>
-        </section>
+              {error && <p className="text-sm" style={{ color: "#E5736B" }}>{error}</p>}
 
-        {/* ───── FAQ ────────────────────────────────────────── */}
-        <section className="relative py-14 px-4 overflow-hidden">
-          <div className="mx-auto max-w-3xl relative z-10">
-            <h2 className="font-serif font-bold text-3xl sm:text-4xl tracking-tight mb-10" style={{ color: "var(--charcoal)" }}>
-              FAQ
-            </h2>
+              {/* OK / back — selects auto-advance, others need the button */}
+              {step.type !== "select" && (
+                <div className="flex items-center gap-4 mt-1">
+                  <Cta onClick={handleNext}>OK</Cta>
+                  {step.type !== "textarea" && (
+                    <span className="text-xs hidden sm:inline" style={{ color: TEXT_MUTED }}>
+                      ou appuie sur <kbd className="font-semibold">Entrée ↵</kbd>
+                    </span>
+                  )}
+                </div>
+              )}
 
-            <Accordion type="single" collapsible className="flex flex-col gap-3">
-              {faq.items.map((item, i) => (
-                <GlassCard key={item.q}>
-                  <AccordionItem value={`faq-${i}`} className="border-b-0 px-6 sm:px-7">
-                    <AccordionTrigger className="font-serif font-semibold text-sm py-5 hover:no-underline" style={{ color: "var(--charcoal)" }}>
-                      {item.q}
-                    </AccordionTrigger>
-                    <AccordionContent className="text-sm leading-relaxed pb-5" style={{ color: "var(--steel)" }}>
-                      {item.a}
-                    </AccordionContent>
-                  </AccordionItem>
-                </GlassCard>
-              ))}
-            </Accordion>
-          </div>
-        </section>
+              {stage > 0 && (
+                <button onClick={() => { setError(null); setStage(stage - 1) }}
+                  className="text-xs self-start mt-1 hover:underline" style={{ color: TEXT_MUTED }}>
+                  ← Précédent
+                </button>
+              )}
+            </motion.section>
+          )}
 
-        {/* ───── GARANTIE ───────────────────────────────────── */}
-        <section id="garantie" className="relative py-14 px-4 overflow-hidden">
-          <Orb color="#FFFFFF" style={{ width: 700, height: 700, top: 0, left: "50%", transform: "translateX(-50%)" }} />
-
-          <div className="mx-auto max-w-3xl relative z-10">
-            <div className="text-center mb-12">
-              <Label>{garantie.label}</Label>
-            </div>
-
-            <GlassCard className="p-10 sm:p-14 flex flex-col items-center text-center gap-8">
-              <div
-                className="w-14 h-14 rounded-2xl flex items-center justify-center"
-                style={{ background: "rgba(0,0,0,0.05)", border: "1px solid rgba(0,0,0,0.09)" }}
-              >
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--graphite)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-                  <path d="m9 12 2 2 4-4" />
-                </svg>
-              </div>
-
-              <h2 className="font-serif font-bold text-3xl sm:text-4xl tracking-tight text-balance" style={{ color: "var(--charcoal)" }}>
-                {garantie.heading}
+          {/* ───── DONE ───── */}
+          {done && (
+            <motion.section key="done"
+              initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4 }}
+              className="flex flex-col items-center text-center gap-6 max-w-lg w-full">
+              <h2 className="font-serif font-bold text-3xl sm:text-4xl leading-tight" style={{ color: TEXT }}>
+                C'est noté{answers.prenom ? `, ${answers.prenom}` : ""} !
               </h2>
+              <p className="text-base sm:text-lg leading-relaxed" style={{ color: TEXT_MUTED }}>
+                Je regarde ta réponse et je t'envoie ton <strong style={{ color: TEXT }}>plan d'implémentation IA personnalisé</strong>
+                {answers.instagram ? <> en DM sur <span style={{ color: PEACH }}>@{answers.instagram.replace(/^@/, "")}</span></> : null} dans les prochaines 24–48h.
+              </p>
+              <p className="text-sm" style={{ color: TEXT_MUTED }}>
+                En attendant, jette un œil à ma vidéo qui résume tout 👇
+              </p>
 
-              <blockquote className="font-serif text-lg sm:text-xl leading-relaxed italic max-w-2xl" style={{ color: "var(--graphite)" }}>
-                &ldquo;{garantie.quote}&rdquo;
-              </blockquote>
-
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full">
-                {garantie.points.map((p) => (
-                  <div
-                    key={p.title}
-                    className="rounded-2xl p-5 flex flex-col gap-2 text-left"
-                    style={{ background: "rgba(255,255,255,0.45)", border: "1px solid rgba(255,255,255,0.70)" }}
-                  >
-                    <span className="font-serif font-semibold text-sm" style={{ color: "var(--charcoal)" }}>{p.title}</span>
-                    <span className="text-xs leading-relaxed" style={{ color: "var(--steel)" }}>{p.desc}</span>
+              {/* YouTube thumbnail (clickable) */}
+              <a href="https://taap.it/flow-os-yt" target="_blank" rel="noopener noreferrer"
+                className="block w-full rounded-2xl overflow-hidden relative group transition-all duration-200 hover:-translate-y-0.5"
+                style={{ aspectRatio: "16 / 9", border: `1px solid ${CARD_BORDER}`, boxShadow: CARD_SHADOW }}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="https://i.ytimg.com/vi/ehqlCsgYZ58/maxresdefault.jpg"
+                  onError={(e) => { (e.currentTarget as HTMLImageElement).src = "https://i.ytimg.com/vi/ehqlCsgYZ58/hqdefault.jpg" }}
+                  alt="Aperçu de la vidéo FlowOS"
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 flex items-center justify-center"
+                  style={{ background: "linear-gradient(to bottom, rgba(0,0,0,0.15), rgba(0,0,0,0.45))" }}>
+                  <div className="flex items-center justify-center rounded-full transition-transform duration-200 group-hover:scale-110"
+                    style={{ width: 68, height: 68, background: OXBLOOD, boxShadow: "0 8px 24px rgba(123,45,38,0.5)" }}>
+                    <svg width="24" height="28" viewBox="0 0 24 28" fill="white" aria-hidden="true">
+                      <polygon points="3,3 22,14 3,25" />
+                    </svg>
                   </div>
-                ))}
-              </div>
-            </GlassCard>
-          </div>
-        </section>
-
-        {/* ───── FINAL CTA ──────────────────────────────────── */}
-        <section className="relative py-18 px-4 overflow-hidden">
-          <Orb color="#FFFFFF" style={{ width: 800, height: 800, top: "50%", left: "50%", transform: "translate(-50%,-50%)" }} />
-
-          <div className="mx-auto max-w-2xl relative z-10 text-center flex flex-col items-center gap-8">
-            <Image
-              src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/FlowOS-JtznK6RZZIiu5LvIS7iMeGfWun0D73.png"
-              alt="Flow OS"
-              width={120}
-              height={42}
-              className="h-9 w-auto object-contain"
-            />
-
-            <h2 className="font-serif font-bold text-5xl sm:text-6xl lg:text-7xl tracking-tight text-balance" style={{ color: "var(--charcoal)" }}>
-              {finalCta.headingLine1}
-              <br />
-              <span style={{ color: "var(--graphite)" }}>{finalCta.headingLine2}</span>
-            </h2>
-
-            <p className="text-lg leading-relaxed max-w-sm" style={{ color: "var(--steel)" }}>
-              {finalCta.subline}
-            </p>
-
-            <div className="flex flex-col sm:flex-row items-center gap-4">
-              <a
-                href="https://www.instagram.com/wissamdarsouni"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="px-10 py-4 rounded-full text-sm font-sans font-semibold text-white transition-all duration-200 hover:-translate-y-0.5"
-                style={{ background: "var(--charcoal)", boxShadow: "0 4px 20px rgba(0,0,0,0.15)" }}
-              >
-                {finalCta.ctaPrimary}
+                </div>
               </a>
-              <a
-                href="https://www.instagram.com/wissamdarsouni"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="px-10 py-4 rounded-full text-sm font-sans font-medium transition-all duration-200"
-                style={{
-                  background: "rgba(255,255,255,0.55)",
-                  backdropFilter: "blur(16px)",
-                  WebkitBackdropFilter: "blur(16px)",
-                  border: "1px solid rgba(255,255,255,0.80)",
-                  color: "var(--graphite)",
-                }}
-              >
-                {finalCta.ctaSecondary}
+
+              <a href="https://taap.it/flow-os-yt" target="_blank" rel="noopener noreferrer"
+                className="px-8 py-3.5 rounded-full text-sm font-semibold text-white transition-all duration-200 hover:-translate-y-0.5"
+                style={{ background: OXBLOOD, boxShadow: "0 4px 24px rgba(123,45,38,0.45)" }}>
+                Checker sur YouTube →
               </a>
-            </div>
-
-            <p className="text-xs mt-4" style={{ color: "var(--steel)" }}>
-              {finalCta.footnote}
-            </p>
-          </div>
-        </section>
-
-      </main>
-    </>
+            </motion.section>
+          )}
+        </AnimatePresence>
+      </div>
+    </main>
   )
 }
