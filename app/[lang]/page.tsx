@@ -7,6 +7,8 @@ import { AnimatePresence, motion } from "framer-motion"
 // ─── Brand ───────────────────────────────────────────────
 const LOGO = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/FlowOS-JtznK6RZZIiu5LvIS7iMeGfWun0D73.png"
 const IG_URL = "https://www.instagram.com/wissamdarsouni"
+const CAL_LINK = "wissam-darsouni/audit-flowos"          // cal.com/<CAL_LINK>
+const VSL_YT_ID = "ehqlCsgYZ58"                          // vidéo de fin de quiz (swap ici)
 
 // ─── Dark theme — matches the FlowOS skill-store DA ──────
 const BG = "#000000"
@@ -202,12 +204,55 @@ function AiOsVisual() {
 }
 
 // ─── Page ────────────────────────────────────────────────
+// ─── Cal.com inline embed ────────────────────────────────
+// Loads the official embed script once and mounts the booking calendar inline,
+// dark-themed to match the page. Prefills name/email from the quiz answers.
+declare global { interface Window { Cal?: any } }
+function CalEmbed({ name, email }: { name?: string; email?: string }) {
+  const ref = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    if (!window.Cal) {
+      // Official cal.com snippet (minified), guarded so it only runs once.
+      ;(function (C: any, A: string, L: string) {
+        const p = function (a: any, ar: any) { a.q.push(ar) }
+        const d = C.document
+        C.Cal = C.Cal || function () {
+          const cal = C.Cal; const ar = arguments
+          if (!cal.loaded) { cal.ns = {}; cal.q = cal.q || []; d.head.appendChild(d.createElement("script")).src = A; cal.loaded = true }
+          if (ar[0] === L) {
+            const api: any = function () { p(api, arguments) }; const namespace = ar[1]; api.q = api.q || []
+            if (typeof namespace === "string") { cal.ns[namespace] = cal.ns[namespace] || api; p(cal.ns[namespace], ar); p(cal, ["initNamespace", namespace]) } else p(cal, ar)
+            return
+          }
+          p(cal, ar)
+        }
+      })(window, "https://app.cal.com/embed/embed.js", "init")
+      window.Cal("init", { origin: "https://cal.com" })
+    }
+    el.innerHTML = ""
+    window.Cal("inline", {
+      elementOrSelector: el,
+      calLink: CAL_LINK,
+      layout: "month_view",
+      config: { layout: "month_view", theme: "dark", name: name ?? "", email: email ?? "" },
+    })
+    window.Cal("ui", { theme: "dark", hideEventTypeDetails: false, layout: "month_view",
+      cssVarsPerTheme: { dark: { "cal-brand": OXBLOOD } } })
+  }, [name, email])
+  return <div ref={ref} className="w-full" style={{ minHeight: 560, overflow: "auto" }} />
+}
+
 export default function Page() {
   // -1 = intro, 0..n = questions, n = done handled via `done`
   const [stage, setStage] = useState<number>(-1)
   const [done, setDone] = useState(false)
   const [answers, setAnswers] = useState<Record<string, string>>({})
   const [error, setError] = useState<string | null>(null)
+  // false until the mount effect has read the URL — so dev shortcuts (?done=1,
+  // ?skip=1) mount their target section directly instead of exiting the intro.
+  const [booted, setBooted] = useState(false)
   const sessionId = useRef<string>("")
   const inputRef = useRef<HTMLInputElement | HTMLTextAreaElement | null>(null)
 
@@ -221,9 +266,14 @@ export default function Page() {
       localStorage.setItem(SID_KEY, sid)
     }
     sessionId.current = sid
-    if (new URLSearchParams(window.location.search).get("skip") === "1") {
-      setStage(STEPS.length - 1)
+    const qs = new URLSearchParams(window.location.search)
+    if (qs.get("skip") === "1") setStage(STEPS.length - 1)
+    // Dev shortcut: `?done=1` jumps straight to the final page (no quiz).
+    if (qs.get("done") === "1") {
+      setAnswers({ prenom: qs.get("prenom") ?? "Wissam", email: qs.get("email") ?? "test@flow-os.ai", instagram: "wissamdarsouni" })
+      setDone(true)
     }
+    setBooted(true)
   }, [])
 
   useEffect(() => {
@@ -322,7 +372,7 @@ export default function Page() {
       <div className="relative z-10 min-h-screen flex items-center justify-center px-5 pt-28 pb-24">
         <AnimatePresence mode="wait">
           {/* ───── INTRO ───── */}
-          {stage === -1 && !done && (
+          {booted && stage === -1 && !done && (
             <motion.section key="intro"
               initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -16 }}
               transition={{ duration: 0.35 }}
@@ -441,45 +491,61 @@ export default function Page() {
             <motion.section key="done"
               initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4 }}
-              className="flex flex-col items-center text-center gap-6 max-w-lg w-full">
-              <h2 className="font-serif font-bold text-3xl sm:text-4xl leading-tight" style={{ color: TEXT }}>
-                C'est noté{answers.prenom ? `, ${answers.prenom}` : ""} !
-              </h2>
-              <p className="text-base sm:text-lg leading-relaxed" style={{ color: TEXT_MUTED }}>
-                Je regarde ta réponse et je t'envoie ton <strong style={{ color: TEXT }}>plan d'implémentation IA personnalisé</strong>
-                {answers.instagram ? <> en DM sur <span style={{ color: PEACH }}>@{answers.instagram.replace(/^@/, "")}</span></> : null} dans les prochaines 24–48h.
-              </p>
-              <p className="text-sm" style={{ color: TEXT_MUTED }}>
-                En attendant, jette un œil à ma vidéo qui résume tout 👇
-              </p>
-
-              {/* YouTube thumbnail (clickable) */}
-              <a href="https://taap.it/flow-os-yt" target="_blank" rel="noopener noreferrer"
-                className="block w-full rounded-2xl overflow-hidden relative group transition-all duration-200 hover:-translate-y-0.5"
-                style={{ aspectRatio: "16 / 9", border: `1px solid ${CARD_BORDER}`, boxShadow: CARD_SHADOW }}>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src="https://i.ytimg.com/vi/ehqlCsgYZ58/maxresdefault.jpg"
-                  onError={(e) => { (e.currentTarget as HTMLImageElement).src = "https://i.ytimg.com/vi/ehqlCsgYZ58/hqdefault.jpg" }}
-                  alt="Aperçu de la vidéo FlowOS"
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute inset-0 flex items-center justify-center"
-                  style={{ background: "linear-gradient(to bottom, rgba(0,0,0,0.15), rgba(0,0,0,0.45))" }}>
-                  <div className="flex items-center justify-center rounded-full transition-transform duration-200 group-hover:scale-110"
-                    style={{ width: 68, height: 68, background: OXBLOOD, boxShadow: "0 8px 24px rgba(123,45,38,0.5)" }}>
-                    <svg width="24" height="28" viewBox="0 0 24 28" fill="white" aria-hidden="true">
-                      <polygon points="3,3 22,14 3,25" />
-                    </svg>
-                  </div>
+              className="flex flex-col items-center text-center gap-8 max-w-4xl w-full">
+              {/* Confirmation */}
+              <div className="flex flex-col items-center gap-4">
+                <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold"
+                  style={{ background: "rgba(123,45,38,0.25)", border: "1px solid rgba(232,155,145,0.35)", color: PEACH }}>
+                  <span style={{ width: 7, height: 7, borderRadius: 99, background: PEACH, display: "inline-block" }} />
+                  Réponses bien reçues
                 </div>
-              </a>
+                <h2 className="font-serif font-bold text-3xl sm:text-4xl lg:text-5xl leading-tight text-balance" style={{ color: TEXT }}>
+                  C'est noté{answers.prenom ? `, ${answers.prenom}` : ""} !
+                </h2>
+                <p className="text-base sm:text-lg leading-relaxed max-w-xl" style={{ color: TEXT_MUTED }}>
+                  Je regarde ta situation et je te recontacte avec ton <strong style={{ color: TEXT }}>plan d'implémentation IA personnalisé</strong>
+                  {answers.instagram ? <> en DM sur <span style={{ color: PEACH }}>@{answers.instagram.replace(/^@/, "")}</span></> : null} sous 24–48h.
+                </p>
+              </div>
 
-              <a href="https://taap.it/flow-os-yt" target="_blank" rel="noopener noreferrer"
-                className="px-8 py-3.5 rounded-full text-sm font-semibold text-white transition-all duration-200 hover:-translate-y-0.5"
-                style={{ background: OXBLOOD, boxShadow: "0 4px 24px rgba(123,45,38,0.45)" }}>
-                Checker sur YouTube →
-              </a>
+              {/* VSL */}
+              <div className="w-full flex flex-col items-center gap-3">
+                <p className="text-sm" style={{ color: TEXT_MUTED }}>
+                  En attendant, 2 minutes pour comprendre <span style={{ color: TEXT }}>ce que je vais te construire</span> 👇
+                </p>
+                <div className="w-full rounded-2xl overflow-hidden relative"
+                  style={{ aspectRatio: "16 / 9", border: `1px solid ${CARD_BORDER}`, boxShadow: CARD_SHADOW, background: "#000" }}>
+                  <iframe
+                    src={`https://www.youtube-nocookie.com/embed/${VSL_YT_ID}?rel=0&modestbranding=1&color=white`}
+                    title="Vidéo FlowOS"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowFullScreen
+                    className="absolute inset-0 w-full h-full"
+                    style={{ border: 0 }}
+                  />
+                </div>
+              </div>
+
+              {/* Booking */}
+              <div id="booking" className="w-full flex flex-col items-center gap-5 rounded-3xl p-5 sm:p-8"
+                style={{ background: CARD_BG, border: `1px solid ${CARD_BORDER}`, boxShadow: CARD_SHADOW }}>
+                <div className="flex flex-col items-center gap-2.5">
+                  <p className="text-xs font-semibold tracking-[0.18em] uppercase" style={{ color: PEACH }}>Tu veux aller plus vite ?</p>
+                  <h3 className="font-serif font-bold text-2xl sm:text-3xl leading-tight text-balance" style={{ color: TEXT }}>
+                    Réserve directement un créneau avec moi.
+                  </h3>
+                  <p className="text-sm sm:text-base leading-relaxed max-w-lg" style={{ color: TEXT_MUTED }}>
+                    On regarde ton business ensemble, je te dis concrètement ce que j'installerais, et on met ça en place plus rapidement.
+                  </p>
+                </div>
+                <div className="w-full rounded-2xl overflow-hidden" style={{ border: `1px solid ${CARD_BORDER}`, background: "rgba(0,0,0,0.35)" }}>
+                  <CalEmbed name={answers.prenom} email={answers.email} />
+                </div>
+                <a href={`https://cal.com/${CAL_LINK}?name=${encodeURIComponent(answers.prenom ?? "")}&email=${encodeURIComponent(answers.email ?? "")}`}
+                  target="_blank" rel="noopener noreferrer" className="text-xs underline underline-offset-4" style={{ color: TEXT_MUTED }}>
+                  Le calendrier ne s'affiche pas ? Ouvrir dans un nouvel onglet →
+                </a>
+              </div>
             </motion.section>
           )}
         </AnimatePresence>
